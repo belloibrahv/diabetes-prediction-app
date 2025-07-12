@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DiabetesCare AI - Advanced Diabetes Prediction & Treatment System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top shadow-sm py-3">
+        <div class="container">
+            <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="#">
+                <span class="navbar-logo bg-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px;">
+                    <i class="fas fa-heartbeat text-primary"></i>
+                </span>
+                <span>DiabetesCare AI</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto gap-2">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#home">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#prediction">Predict</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#education">Education</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#about">About</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero-section position-relative text-white py-5" style="min-height: 80vh; overflow: hidden;">
+        <div class="hero-bg-img position-absolute top-0 start-0 w-100 h-100" style="background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1500&q=80') center center/cover no-repeat; filter: brightness(0.7);"></div>
+        <div class="hero-bg position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(135deg, #1976d2 0%, #42a5f5 100%); opacity: 0.65;"></div>
+        <div class="container position-relative" style="z-index: 2;">
+            <div class="row align-items-center min-vh-80">
+                <div class="col-lg-6">
+                    <h1 class="display-3 fw-bold mb-4 text-shadow">Advanced Diabetes Risk Assessment</h1>
+                    <p class="lead mb-4 text-white-50">Comprehensive AI-powered system for diabetes prediction, risk stratification, and personalized treatment recommendations. Get evidence-based insights and educational content for better health management.</p>
+                    <div class="d-flex gap-3">
+                        <a href="#prediction" class="btn btn-light btn-lg px-4 shadow-sm hero-cta">
+                            <i class="fas fa-play me-2"></i>Start Assessment
+                        </a>
+                        <a href="#education" class="btn btn-outline-light btn-lg px-4 shadow-sm hero-cta">
+                            <i class="fas fa-graduation-cap me-2"></i>Learn More
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <div class="hero-image position-relative">
+                        <i class="fas fa-brain fa-10x text-white-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Prediction Section -->
+    <section id="prediction" class="py-5">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="card border-0 shadow-lg">
+                        <div class="card-header bg-primary text-white text-center py-4">
+                            <h3 class="mb-0">
+                                <i class="fas fa-stethoscope me-2"></i>Comprehensive Diabetes Risk Assessment
+                            </h3>
+                            <p class="mb-0 mt-2">Enter your health parameters for advanced analysis and personalized recommendations</p>
+                        </div>
+                        <div class="card-body p-5">
+                            {% if error %}
+                            <div class="alert alert-danger text-center" role="alert">
+                                {{ error }}
+                            </div>
+                            {% endif %}
+                            
+                            <!-- Form Instructions -->
+                            <div class="alert alert-info mb-4" role="alert">
+                                <div class="d-flex align-items-start">
+                                    <i class="fas fa-lightbulb text-info me-3 mt-1"></i>
+                                    <div>
+                                        <h6 class="alert-heading mb-2">How to fill this form:</h6>
+                                        <ul class="mb-0 small">
+                                            <li><strong>Required fields</strong> are marked with an asterisk (*)</li>
+                                            <li><strong>HbA1c level</strong> is the most important parameter for diabetes risk assessment</li>
+                                            <li>If you don't know your <strong>BMI</strong>, you can calculate it as: weight(kg) ÷ height(m)²</li>
+                                            <li>For <strong>clinical values</strong>, use your most recent test results</li>
+                                            <li>Be honest about your <strong>lifestyle habits</strong> for accurate assessment</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <form action="{{ url_for('predict') }}" method="post" id="predictionForm" novalidate>
+                                <!-- Basic Demographics -->
+                                <div class="row mb-4">
+                                    <div class="col-12">
+                                        <h4 class="text-primary mb-3"><i class="fas fa-user me-2"></i>Basic Demographics</h4>
+                                        <p class="text-muted small mb-3"><i class="fas fa-info-circle me-1"></i>Please provide your basic demographic information</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <input type="number" class="form-control" id="age" name="Age" placeholder="Enter your age (e.g., 45)" min="18" max="120" required>
+                                            <label for="age">Age (years)</label>
+                                            <div class="form-text">Enter your current age between 18-120 years</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <select class="form-select" id="gender" name="Gender" required>
+                                                <option value="">Choose your gender</option>
+                                                <option value="Male">Male</option>
+                                                <option value="Female">Female</option>
+                                            </select>
+                                            <label for="gender">Gender</label>
+                                            <div class="form-text">Select your biological gender</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Anthropometric Measurements -->
+                                <div class="row mb-4">
+                                    <div class="col-12">
+                                        <h4 class="text-primary mb-3"><i class="fas fa-weight me-2"></i>Anthropometric Measurements</h4>
+                                        <p class="text-muted small mb-3"><i class="fas fa-info-circle me-1"></i>Provide your body measurements for accurate assessment</p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-floating mb-3">
+                                            <input type="number" class="form-control" id="weight" name="Weight" placeholder="Enter weight in kg (e.g., 70)" min="30" max="300" step="0.1">
+                                            <label for="weight">Weight (kg)</label>
+                                            <div class="form-text">Enter your current weight in kilograms</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-floating mb-3">
+                                            <input type="number" class="form-control" id="height" name="Height" placeholder="Enter height in cm (e.g., 170)" min="100" max="250" step="0.1">
+                                            <label for="height">Height (cm)</label>
+                                            <div class="form-text">Enter your height in centimeters</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-floating mb-3">
+                                            <input type="number" class="form-control" id="bmi" name="BMI" placeholder="Enter BMI (e.g., 25.5)" min="15" max="60" step="0.1" required>
+                                            <label for="bmi">BMI (kg/m²)</label>
+                                            <div class="form-text">Body Mass Index - can be calculated as weight(kg) / height(m)²</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Clinical Indicators -->
+                                <div class="row mb-4">
+                                    <div class="col-12">
+                                        <h4 class="text-primary mb-3"><i class="fas fa-flask me-2"></i>Clinical Indicators</h4>
+                                        <p class="text-muted small mb-3"><i class="fas fa-info-circle me-1"></i>Provide your recent clinical test results</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <input type="number" class="form-control" id="hba1c" name="HbA1c" placeholder="Enter HbA1c level (e.g., 5.7)" min="3.5" max="9.0" step="0.1" required>
+                                            <label for="hba1c">HbA1c Level (%)</label>
+                                            <div class="form-text">Glycated hemoglobin - most important indicator for diabetes risk</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <input type="number" class="form-control" id="bloodGlucose" name="BloodGlucose" placeholder="Enter blood glucose (e.g., 140)" min="50" max="500" step="1">
+                                            <label for="bloodGlucose">Blood Glucose Level (mg/dL)</label>
+                                            <div class="form-text">Fasting blood glucose level (optional for reference)</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Medical Conditions -->
+                                <div class="row mb-4">
+                                    <div class="col-12">
+                                        <h4 class="text-primary mb-3"><i class="fas fa-heartbeat me-2"></i>Medical Conditions</h4>
+                                        <p class="text-muted small mb-3"><i class="fas fa-info-circle me-1"></i>Indicate if you have any of these medical conditions</p>
+                                            </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <select class="form-select" id="hypertension" name="Hypertension" required>
+                                                <option value="">Select hypertension status</option>
+                                                <option value="0">No Hypertension</option>
+                                                <option value="1">Has Hypertension</option>
+                                            </select>
+                                            <label for="hypertension">Hypertension</label>
+                                            <div class="form-text">High blood pressure condition</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <select class="form-select" id="heartDisease" name="HeartDisease" required>
+                                                <option value="">Select heart disease status</option>
+                                                <option value="0">No Heart Disease</option>
+                                                <option value="1">Has Heart Disease</option>
+                                            </select>
+                                            <label for="heartDisease">Heart Disease</label>
+                                            <div class="form-text">Any cardiovascular conditions</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Lifestyle Factors -->
+                                <div class="row mb-4">
+                                    <div class="col-12">
+                                        <h4 class="text-primary mb-3"><i class="fas fa-running me-2"></i>Lifestyle Factors</h4>
+                                        <p class="text-muted small mb-3"><i class="fas fa-info-circle me-1"></i>Provide information about your lifestyle habits</p>
+                                            </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <select class="form-select" id="smokingHistory" name="SmokingHistory" required>
+                                                <option value="">Choose your smoking status</option>
+                                                <option value="never">Never Smoked</option>
+                                                <option value="current">Current Smoker</option>
+                                                <option value="former">Former Smoker</option>
+                                                <option value="No Info">No Information</option>
+                                            </select>
+                                            <label for="smokingHistory">Smoking History</label>
+                                            <div class="form-text">Your current or past smoking habits</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <select class="form-select" id="physicalActivity" name="PhysicalActivity">
+                                                <option value="">Choose your activity level</option>
+                                                <option value="sedentary">Sedentary (Little to no exercise)</option>
+                                                <option value="light">Light Activity (1-3 days/week)</option>
+                                                <option value="moderate">Moderate Activity (3-5 days/week)</option>
+                                                <option value="active">Very Active (6-7 days/week)</option>
+                                            </select>
+                                            <label for="physicalActivity">Physical Activity Level</label>
+                                            <div class="form-text">How often do you exercise or engage in physical activity?</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Additional Information -->
+                                <div class="row mb-4">
+                                    <div class="col-12">
+                                        <h4 class="text-primary mb-3"><i class="fas fa-info-circle me-2"></i>Additional Information</h4>
+                                        <p class="text-muted small mb-3"><i class="fas fa-info-circle me-1"></i>Provide additional information for better assessment</p>
+                                            </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <select class="form-select" id="dietaryHabits" name="DietaryHabits">
+                                                <option value="">Choose your diet type</option>
+                                                <option value="healthy">Healthy Diet (Balanced, whole foods)</option>
+                                                <option value="moderate">Moderate Diet (Some processed foods)</option>
+                                                <option value="unhealthy">Unhealthy Diet (High in processed foods)</option>
+                                            </select>
+                                            <label for="dietaryHabits">Dietary Habits</label>
+                                            <div class="form-text">Your typical eating patterns and food choices</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <select class="form-select" id="familyHistory" name="FamilyHistory">
+                                                <option value="">Choose family history status</option>
+                                                <option value="yes">Family History of Diabetes</option>
+                                                <option value="no">No Family History</option>
+                                                <option value="unknown">Unknown</option>
+                                            </select>
+                                            <label for="familyHistory">Family History of Diabetes</label>
+                                            <div class="form-text">Do any family members have diabetes?</div>
+                                        </div>
+                                            </div>
+                                    <div class="col-12">
+                                        <div class="form-floating mb-3">
+                                            <textarea class="form-control" id="existingConditions" name="ExistingConditions" placeholder="List any existing medical conditions, medications, or health concerns (e.g., high cholesterol, thyroid issues, etc.)..." style="height: 100px"></textarea>
+                                            <label for="existingConditions">Existing Medical Conditions</label>
+                                            <div class="form-text">Any other health conditions, medications, or concerns that might be relevant</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="text-center mt-4">
+                                    <button type="submit" class="btn btn-primary btn-lg px-5 py-3" id="analyzeBtn">
+                                        <span class="spinner-border spinner-border-sm d-none me-2" role="status" aria-hidden="true" id="analyzeSpinner"></span>
+                                        <i class="fas fa-search me-2"></i>Analyze Risk & Get Recommendations
+                                    </button>
+                                </div>
+                            </form>
+
+                            {% if prediction_text %}
+                            <!-- Results Modal -->
+                            <div class="modal fade" id="resultModal" tabindex="-1" aria-labelledby="resultModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-xl modal-dialog-centered">
+                                <div class="modal-content">
+                                        <div class="modal-header border-0" style="background: {% if 'detected' in prediction_text %}#fff3cd{% else %}#d1e7dd{% endif %};">
+                                            <div class="d-flex align-items-center gap-3 w-100">
+                                        <span class="display-6">
+                                                    <i class="fas {% if 'detected' in prediction_text %}fa-exclamation-triangle text-warning{% else %}fa-check-circle text-success{% endif %}"></i>
+                                        </span>
+                                                <div class="flex-grow-1">
+                                                    <h4 class="modal-title mb-0">Diabetes Risk Assessment Results</h4>
+                                                    <div class="small text-muted">Risk Probability: {{ prediction_probability|default('50%') }}</div>
+                                                    <div class="progress mt-2" style="height: 8px; width: 200px;">
+                                                        <div class="progress-bar {% if 'detected' in prediction_text %}bg-warning{% else %}bg-success{% endif %}" role="progressbar" style="width: {{ prediction_probability|default('50%') }};" aria-valuenow="{{ prediction_probability|default('50%')|replace('%','') }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                                    </div>
+                                                </div>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                          </div>
+                                        </div>
+                                        <div class="modal-body p-0">
+                                            <div class="row g-0">
+                                                <!-- Main Results -->
+                                                <div class="col-lg-8 p-4">
+                                                    <!-- Assessment Result -->
+                                                    <div class="card border-0 shadow-sm mb-4">
+                                                        <div class="card-body">
+                                                            <h5 class="card-title text-primary mb-3">
+                                                                <i class="fas fa-stethoscope me-2"></i>Assessment Summary
+                                                            </h5>
+                                                            <div class="alert {% if 'detected' in prediction_text %}alert-warning{% else %}alert-success{% endif %} mb-3">
+                                                                <h6 class="alert-heading">{{ prediction_text }}</h6>
+                                                                {% if diabetes_type %}
+                                                                <p class="mb-0">Diabetes Type: <strong>{{ diabetes_type }}</strong></p>
+                                                                {% endif %}
+                                      </div>
+                                      </div>
+                                    </div>
+
+                                                    <!-- Recommendations -->
+                                                    {% if recommendations %}
+                                                    <div class="card border-0 shadow-sm">
+                                                        <div class="card-header bg-primary text-white">
+                                                            <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Personalized Recommendations</h5>
+                                      </div>
+                                      <div class="card-body">
+                                                            <div class="row">
+                                                                {% for category, items in recommendations.items() %}
+                                                                {% if items %}
+                                                                <div class="col-md-6 mb-3">
+                                                                    <h6 class="text-primary">
+                                                                        <i class="fas fa-arrow-right me-2"></i>{{ category.title() }}
+                                                                    </h6>
+                                                                    <ul class="list-unstyled">
+                                                                        {% for item in items %}
+                                                                        <li class="mb-2">
+                                                                            <i class="fas fa-check-circle text-success me-2"></i>{{ item }}
+                                                                        </li>
+                                                                        {% endfor %}
+                                        </ul>
+                                      </div>
+                                                                {% endif %}
+                                                                {% endfor %}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    {% endif %}
+                                                </div>
+
+                                                <!-- Sidebar -->
+                                                <div class="col-lg-4 bg-light p-4">
+                                                    <!-- Risk Assessment -->
+                                                    <div class="card border-0 shadow-sm mb-4">
+                                                        <div class="card-header bg-{{ risk_color|default('info') }} text-white">
+                                                            <h6 class="mb-0"><i class="fas fa-chart-line me-2"></i>Risk Assessment</h6>
+                                    </div>
+                                                        <div class="card-body text-center">
+                                                            <div class="display-6 text-{{ risk_color|default('info') }} mb-2">
+                                        <i class="fas fa-shield-alt"></i>
+                                                            </div>
+                                                            <h5 class="text-{{ risk_color|default('info') }}">{{ risk_level|default('Unknown') }}</h5>
+                                                            <p class="small text-muted">{{ prediction_probability|default('50%') }} probability</p>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Educational Content -->
+                                                    {% if educational_content %}
+                                                    <div class="card border-0 shadow-sm mb-4">
+                                                        <div class="card-header bg-info text-white">
+                                                            <h6 class="mb-0"><i class="fas fa-graduation-cap me-2"></i>Educational Information</h6>
+                                      </div>
+                                      <div class="card-body">
+                                                            {% for category, items in educational_content.items() %}
+                                                            {% if items %}
+                                                            <h6 class="text-info mb-2">{{ category.title() }}</h6>
+                                                            <ul class="list-unstyled small">
+                                                                {% for item in items %}
+                                                                <li class="mb-1">
+                                                                    <i class="fas fa-info-circle text-info me-1"></i>{{ item }}
+                                                                </li>
+                                                                {% endfor %}
+                                        </ul>
+                                                            {% endif %}
+                                                            {% endfor %}
+                                      </div>
+                                    </div>
+                                    {% endif %}
+
+                                                    <!-- Export Report -->
+                                                    <div class="card border-0 shadow-sm">
+                                                        <div class="card-header bg-success text-white">
+                                                            <h6 class="mb-0"><i class="fas fa-download me-2"></i>Export Report</h6>
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <p class="small text-muted mb-3">Download your assessment report to share with healthcare providers.</p>
+                                                            <button class="btn btn-success w-100" onclick="exportReport()">
+                                                                <i class="fas fa-file-csv me-2"></i>Download Report
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                  </div>
+                                  <div class="modal-footer border-0 justify-content-center">
+                                            <button type="button" class="btn btn-outline-primary px-4" data-bs-dismiss="modal">
+                                                <i class="fas fa-times me-2"></i>Close
+                                            </button>
+                                            <button type="button" class="btn btn-primary px-4" onclick="window.print()">
+                                                <i class="fas fa-print me-2"></i>Print Results
+                                            </button>
+                                        </div>
+                                </div>
+                              </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Education Section -->
+    <section id="education" class="py-5 bg-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center mb-5">
+                    <h2 class="display-5 fw-bold text-primary">Educational Content</h2>
+                    <p class="lead text-muted">Learn about diabetes prevention, management, and healthy living</p>
+                </div>
+            </div>
+            
+            {% if educational_content %}
+            <div class="row g-4">
+                {% for category, items in educational_content.items() %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="mb-0">{{ category.title() }}</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-unstyled">
+                                {% for item in items %}
+                                <li class="mb-2">
+                                    <i class="fas fa-info-circle text-info me-2"></i>{{ item }}
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                            </div>
+            {% else %}
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="mb-0">General Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-unstyled">
+                                <li class="mb-2"><i class="fas fa-info-circle text-info me-2"></i>Diabetes is a chronic condition affecting glucose metabolism</li>
+                                <li class="mb-2"><i class="fas fa-info-circle text-info me-2"></i>Early detection can prevent complications</li>
+                                <li class="mb-2"><i class="fas fa-info-circle text-info me-2"></i>Lifestyle changes are crucial for management</li>
+                                <li class="mb-2"><i class="fas fa-info-circle text-info me-2"></i>Regular monitoring helps track progress</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">Prevention</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-unstyled">
+                                <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Maintain healthy weight through diet and exercise</li>
+                                <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Eat balanced diet low in processed foods</li>
+                                <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Get regular physical activity</li>
+                                <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Monitor blood pressure and cholesterol</li>
+                                <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Avoid smoking and limit alcohol</li>
+                            </ul>
+                        </div>
+                    </div>
+                            </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-header bg-warning text-dark">
+                            <h5 class="mb-0">Management</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-unstyled">
+                                <li class="mb-2"><i class="fas fa-tools text-warning me-2"></i>Work closely with healthcare providers</li>
+                                <li class="mb-2"><i class="fas fa-tools text-warning me-2"></i>Monitor blood glucose levels regularly</li>
+                                <li class="mb-2"><i class="fas fa-tools text-warning me-2"></i>Take medications as prescribed</li>
+                                <li class="mb-2"><i class="fas fa-tools text-warning me-2"></i>Maintain healthy lifestyle</li>
+                                <li class="mb-2"><i class="fas fa-tools text-warning me-2"></i>Attend regular check-ups</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center mb-5">
+                    <h2 class="display-5 fw-bold text-primary">About the System</h2>
+                    <p class="lead text-muted">Advanced AI-powered diabetes prediction and management system</p>
+                </div>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-3">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon mb-3">
+                                <i class="fas fa-robot fa-3x text-primary"></i>
+                            </div>
+                            <h5 class="card-title">AI-Powered Prediction</h5>
+                            <p class="card-text text-muted">Advanced machine learning algorithms provide accurate diabetes risk assessment based on comprehensive health parameters.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon mb-3">
+                                <i class="fas fa-user-cog fa-3x text-success"></i>
+                            </div>
+                            <h5 class="card-title">Personalized Recommendations</h5>
+                            <p class="card-text text-muted">Tailored treatment and lifestyle recommendations based on individual risk profiles and health parameters.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon mb-3">
+                                <i class="fas fa-graduation-cap fa-3x text-info"></i>
+                            </div>
+                            <h5 class="card-title">Educational Content</h5>
+                            <p class="card-text text-muted">Comprehensive educational materials about diabetes prevention, management, and healthy living practices.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon mb-3">
+                                <i class="fas fa-file-export fa-3x text-warning"></i>
+                            </div>
+                            <h5 class="card-title">Report Export</h5>
+                            <p class="card-text text-muted">Generate detailed reports that can be shared with healthcare providers for better care coordination.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5 class="fw-bold">DiabetesCare AI</h5>
+                    <p class="text-muted">Advanced Diabetes Prediction and Treatment Recommendation System</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="text-muted mb-0">
+                        <i class="fas fa-graduation-cap me-2"></i>
+                        Nigeria Defence Academy, Kaduna
+                    </p>
+                    <p class="text-muted mb-0">
+                        <i class="fas fa-calendar me-2"></i>
+                        July 2025
+                    </p>
+                </div>
+            </div>
+            <hr class="my-3">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p class="text-muted mb-0">
+                        <small>
+                            <i class="fas fa-shield-alt me-2"></i>
+                            This system is for educational and research purposes. Always consult healthcare professionals for medical decisions.
+                        </small>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Form validation and loading feedback
+const predictionForm = document.getElementById('predictionForm');
+const analyzeBtn = document.getElementById('analyzeBtn');
+const analyzeSpinner = document.getElementById('analyzeSpinner');
+        
+if (predictionForm && analyzeBtn && analyzeSpinner) {
+    predictionForm.addEventListener('submit', function() {
+        analyzeBtn.disabled = true;
+        analyzeSpinner.classList.remove('d-none');
+    });
+}
+
+        // Export report function
+        function exportReport() {
+            const inputData = {
+                'Age': document.getElementById('age')?.value || '',
+                'Gender': document.getElementById('gender')?.value || '',
+                'Weight': document.getElementById('weight')?.value || '',
+                'Height': document.getElementById('height')?.value || '',
+                'BMI': document.getElementById('bmi')?.value || '',
+                'HbA1c': document.getElementById('hba1c')?.value || '',
+                'BloodGlucose': document.getElementById('bloodGlucose')?.value || '',
+                'Hypertension': document.getElementById('hypertension')?.value || '',
+                'HeartDisease': document.getElementById('heartDisease')?.value || '',
+                'SmokingHistory': document.getElementById('smokingHistory')?.value || '',
+                'PhysicalActivity': document.getElementById('physicalActivity')?.value || '',
+                'DietaryHabits': document.getElementById('dietaryHabits')?.value || '',
+                'FamilyHistory': document.getElementById('familyHistory')?.value || '',
+                'ExistingConditions': document.getElementById('existingConditions')?.value || '',
+                'prediction': {{ 'true' if 'detected' in prediction_text else 'false' }} if '{{ prediction_text }}' else false,
+                'prediction_probability': {{ prediction_probability|default('0.5')|replace('%','')|float/100 }} if '{{ prediction_probability }}' else 0.5,
+                'risk_level': '{{ risk_level|default("Unknown") }}',
+                'diabetes_type': '{{ diabetes_type|default("Unknown") }}',
+                'recommendations': {{ recommendations|tojson if recommendations else '{}' }}
+            };
+
+            fetch('/export-report', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(inputData)
+            })
+            .then(response => response.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `diabetes_prediction_report_${new Date().toISOString().slice(0,10)}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            })
+            .catch(error => {
+                console.error('Error exporting report:', error);
+                alert('Error exporting report. Please try again.');
+            });
+        }
+
+        // Show modal if prediction results are available
+{% if prediction_text %}
+        document.addEventListener('DOMContentLoaded', function() {
+            const resultModal = new bootstrap.Modal(document.getElementById('resultModal'));
+            setTimeout(function() {
+                resultModal.show();
+            }, 500);
+});
+{% endif %}
+
+    // Real-time validation
+    const form = document.getElementById('predictionForm');
+    if (form) {
+        form.addEventListener('input', function(e) {
+                if (e.target && e.target.matches('input, select, textarea')) {
+                e.target.classList.remove('is-invalid');
+                if (!e.target.checkValidity()) {
+                    e.target.classList.add('is-invalid');
+                }
+            }
+        });
+            
+        form.addEventListener('submit', function(e) {
+            let valid = true;
+                form.querySelectorAll('input, select, textarea').forEach(function(input) {
+                input.classList.remove('is-invalid');
+                    if (input.hasAttribute('required') && !input.checkValidity()) {
+                    input.classList.add('is-invalid');
+                    valid = false;
+                }
+            });
+            if (!valid) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        });
+    }
+</script>
+</body>
+</html>
+
