@@ -295,6 +295,13 @@
                             </form>
 
                             {% if prediction_text %}
+                            <!-- Manual Results Display Button -->
+                            <div class="text-center mt-4">
+                                <button type="button" class="btn btn-success btn-lg" onclick="showResults()">
+                                    <i class="fas fa-eye me-2"></i>View Results & Recommendations
+                                </button>
+                            </div>
+                            
                             <!-- Results Modal -->
                             <div class="modal fade" id="resultModal" tabindex="-1" aria-labelledby="resultModalLabel" aria-hidden="true">
                                 <div class="modal-dialog modal-xl modal-dialog-centered">
@@ -640,6 +647,17 @@ if (predictionForm && analyzeBtn && analyzeSpinner) {
     });
 }
 
+        // Show results function
+        function showResults() {
+            const modalElement = document.getElementById('resultModal');
+            if (modalElement) {
+                const resultModal = new bootstrap.Modal(modalElement);
+                resultModal.show();
+            } else {
+                console.error('Modal element not found');
+            }
+        }
+
         // Export report function
         function exportReport() {
             const inputData = {
@@ -691,11 +709,25 @@ if (predictionForm && analyzeBtn && analyzeSpinner) {
         // Show modal if prediction results are available
 {% if prediction_text %}
         document.addEventListener('DOMContentLoaded', function() {
-            const resultModal = new bootstrap.Modal(document.getElementById('resultModal'));
-            setTimeout(function() {
+            const modalElement = document.getElementById('resultModal');
+            if (modalElement) {
+                const resultModal = new bootstrap.Modal(modalElement);
+                setTimeout(function() {
+                    resultModal.show();
+                }, 100);
+            } else {
+                console.error('Modal element not found');
+            }
+        });
+        
+        // Fallback: Show modal after page load
+        window.addEventListener('load', function() {
+            const modalElement = document.getElementById('resultModal');
+            if (modalElement && !modalElement.classList.contains('show')) {
+                const resultModal = new bootstrap.Modal(modalElement);
                 resultModal.show();
-            }, 500);
-});
+            }
+        });
 {% endif %}
 
     // Real-time validation
