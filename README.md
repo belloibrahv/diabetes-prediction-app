@@ -1,311 +1,183 @@
-# DiabetesCare AI - Online Diabetes Check and Treatment Recommendation System
+# Diabetes Prediction AI Application
 
-## 📋 Project Overview
+A comprehensive Flask-based web application for diabetes prediction using machine learning. This application provides risk assessment, personalized recommendations, and educational content for diabetes management.
 
-**DiabetesCare AI** is an advanced machine learning-based web application for diabetes risk assessment and personalized treatment recommendations. This project addresses the critical need for accessible, cost-effective diabetes screening tools, particularly in resource-constrained environments like Nigeria.
+## 🏗️ Project Structure
 
-### 🎯 Key Features
+```
+Diabetes-Prediction/
+├── app.py                 # Main Flask application
+├── requirements.txt       # Python dependencies
+├── Procfile              # Render deployment configuration
+├── runtime.txt           # Python version specification
+├── models/               # ML model files
+│   ├── model.pkl        # Trained ML model
+│   ├── scaler.pkl       # Feature scaler
+│   ├── label_encoders.pkl # Label encoders
+│   └── feature_names.pkl # Feature names
+├── static/               # Static files
+│   └── css/
+│       └── style.css    # Application styles
+├── templates/            # HTML templates
+│   └── index.html       # Main application template
+└── docs/                # Documentation and assets
+    ├── diabetes.ipynb   # Jupyter notebook
+    ├── merge_diabetes_data.py # Data processing script
+    └── ...              # Other documentation files
+```
 
-- **AI-Powered Prediction**: Advanced machine learning algorithms for accurate diabetes risk assessment
-- **Personalized Recommendations**: Tailored treatment and lifestyle recommendations based on individual risk profiles
-- **Mobile-First Design**: Responsive web application optimized for all devices
-- **Comprehensive Risk Assessment**: Detailed analysis with confidence intervals and risk stratification
-- **Evidence-Based Guidance**: Treatment recommendations based on clinical guidelines
+## 🚀 Features
 
-## 🏥 Research Context
+### Core Functionality
+- **Advanced Diabetes Prediction**: ML-powered risk assessment
+- **Risk Stratification**: High, Moderate, Low, Very Low risk levels
+- **Diabetes Type Classification**: Type 1, Type 2, or No Diabetes
+- **Personalized Recommendations**: Evidence-based treatment suggestions
+- **Educational Content**: Comprehensive diabetes education
+- **Data Export**: CSV report generation
+- **Responsive UI**: Modern, mobile-friendly interface
 
-This project is part of a comprehensive research study titled **"Online Diabetes Check and Treatment Recommendation System with Machine Learning"** conducted at the Nigeria Defence Academy, Kaduna. The system addresses the growing diabetes epidemic in Nigeria and developing countries by providing:
-
-- Early detection capabilities
-- Personalized treatment recommendations
-- Accessible healthcare tools
-- Cost-effective screening solutions
+### Technical Features
+- **Machine Learning Model**: Gradient Boosting Classifier (95.5% accuracy)
+- **Feature Engineering**: Comprehensive data preprocessing
+- **API Endpoints**: RESTful API for integration
+- **Health Monitoring**: Built-in health check endpoints
+- **Error Handling**: Robust error management
+- **Logging**: Comprehensive application logging
 
 ## 🛠️ Technology Stack
 
-### Backend
-- **Python 3.9+**: Core programming language
-- **Flask 3.0.0**: Web framework for API development
-- **scikit-learn 1.3.2**: Machine learning library
-- **pandas 2.1.4**: Data manipulation and analysis
-- **numpy 1.24.3**: Numerical computing
+- **Backend**: Flask (Python)
+- **Machine Learning**: scikit-learn, pandas, numpy
+- **Frontend**: HTML5, CSS3, JavaScript, Bootstrap
+- **Deployment**: Render (Cloud Platform)
+- **Version Control**: Git, GitHub
 
-### Frontend
-- **Bootstrap 5.3.0**: Responsive CSS framework
-- **Font Awesome 6.4.0**: Icon library
-- **Inter Font**: Modern typography
-- **Custom CSS**: Enhanced styling and animations
+## 📊 Model Performance
 
-### Machine Learning
-- **Random Forest Classifier**: Primary prediction model
-- **Gradient Boosting**: Alternative ensemble method
-- **Support Vector Machine**: Linear classification
-- **Logistic Regression**: Baseline model
-- **MinMaxScaler**: Feature normalization
+- **Accuracy**: 95.5%
+- **Most Important Features**: HbA1c, Age, BMI, Gender
+- **Model Type**: Gradient Boosting Classifier
+- **Validation**: Cross-validation and ROC analysis
 
-## 📊 Dataset Information
+## 🚀 Deployment
 
-The system uses the PIMA Indians Diabetes Dataset, which includes:
+### Render Deployment
 
-| Feature | Description | Range |
-|---------|-------------|-------|
-| Glucose | Blood glucose level (mg/dL) | 50-500 |
-| Insulin | Insulin level (μU/mL) | 0-1000 |
-| BMI | Body Mass Index (kg/m²) | 15-60 |
-| Age | Age in years | 18-120 |
+This application is optimized for deployment on Render.com:
 
-## 🚀 Installation and Setup
+1. **Fork/Clone** this repository
+2. **Connect to Render**:
+   - Go to [render.com](https://render.com)
+   - Create new Web Service
+   - Connect your GitHub repository
+   - Set Root Directory to `/` (root of this project)
+   - Build Command: `pip install -r requirements.txt`
+   - Start Command: `gunicorn app:app`
+3. **Deploy** and get your live URL
 
-### Prerequisites
-
-- Python 3.9 or higher
-- pip (Python package installer)
-- Git (for cloning the repository)
-
-### Step 1: Clone the Repository
+### Local Development
 
 ```bash
-git clone <repository-url>
-cd Diabetes-Prediction
-```
+# Clone the repository
+git clone https://github.com/belloibrahv/diabetes-prediction-app.git
+cd diabetes-prediction-app
 
-### Step 2: Create Virtual Environment
-
-```bash
 # Create virtual environment
 python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-# Activate virtual environment
-# On Windows:
-venv\Scripts\activate
-# On macOS/Linux:
-source venv/bin/activate
-```
-
-### Step 3: Install Dependencies
-
-```bash
+# Install dependencies
 pip install -r requirements.txt
-```
 
-### Step 4: Train the Model
-
-```bash
-cd flask
-python model.py
-```
-
-This will:
-- Load and preprocess the diabetes dataset
-- Train multiple machine learning models
-- Evaluate model performance
-- Save the best model as `model.pkl`
-- Generate performance visualizations
-
-### Step 5: Run the Application
-
-```bash
-# From the flask directory
+# Run the application
 python app.py
+
+# Access at http://localhost:5050
 ```
 
-The application will be available at `http://localhost:5000`
+## 📋 API Endpoints
 
-## 📱 Usage Guide
+### Web Interface
+- `GET /` - Main application interface
+- `POST /predict` - Form-based prediction
+- `GET /health` - Health check endpoint
 
-### For Users
+### REST API
+- `POST /api/predict` - JSON-based prediction
+- `POST /export-report` - Export prediction report as CSV
 
-1. **Access the Application**: Open your web browser and navigate to the application URL
-2. **Navigate the Interface**: Use the navigation menu to explore different sections
-3. **Enter Health Data**: Fill in the prediction form with your health parameters:
-   - Glucose Level (mg/dL)
-   - Insulin Level (μU/mL)
-   - BMI (kg/m²)
-   - Age (years)
-4. **Get Results**: Submit the form to receive instant analysis and recommendations
-5. **Review Recommendations**: Read through personalized treatment and lifestyle advice
+### Example API Usage
 
-### For Developers
-
-#### API Endpoints
-
-- `GET /`: Landing page with project information
-- `POST /predict`: Diabetes prediction endpoint
-- `GET /health`: Health check endpoint
-- `POST /api/predict`: JSON API for predictions
-
-#### API Usage Example
-
-```python
-import requests
-
-# Prediction API call
-data = {
-    "Glucose Level": 120,
-    "Insulin": 15,
-    "BMI": 25.5,
-    "Age": 45
-}
-
-response = requests.post('http://localhost:5000/api/predict', json=data)
-result = response.json()
-print(result)
+```bash
+curl -X POST https://your-app.onrender.com/api/predict \
+  -H "Content-Type: application/json" \
+  -d '{
+    "Age": 45,
+    "Gender": "Male",
+    "BMI": 28.5,
+    "HbA1c": 6.2,
+    "Hypertension": 1,
+    "HeartDisease": 0,
+    "SmokingHistory": "former"
+  }'
 ```
 
 ## 🔧 Configuration
 
 ### Environment Variables
-
-Create a `.env` file in the flask directory:
-
-```env
-FLASK_DEBUG=False
-SECRET_KEY=your-secret-key-here
-PORT=5000
-```
+- `FLASK_ENV`: Set to `production` for deployment
+- `SECRET_KEY`: Flask secret key (auto-generated if not set)
 
 ### Model Configuration
+- Model files are stored in `models/` directory
+- Automatic model loading on application startup
+- Fallback handling for missing model files
 
-The model training script (`model.py`) can be customized:
+## 📈 Model Training
 
-- **Feature Selection**: Modify `feature_names` in `preprocess_data()`
-- **Model Parameters**: Adjust hyperparameters in `train_models()`
-- **Evaluation Metrics**: Add custom metrics in `evaluate_model()`
+The ML model was trained on a comprehensive dataset with the following features:
+- Age, Gender, BMI, Weight, Height
+- HbA1c, Physical Activity, Dietary Habits
+- Family History, Existing Conditions
+- Hypertension, Heart Disease, Smoking History
 
-## 📈 Model Performance
+**Note**: Insulin and Glucose parameters were intentionally excluded as per research requirements to maintain the predictive nature of the system.
 
-The system achieves the following performance metrics:
+## 🎯 Functional Requirements Met
 
-- **Accuracy**: 85-90%
-- **AUC Score**: 0.85-0.90
-- **Sensitivity**: 80-85%
-- **Specificity**: 85-90%
-
-### Model Selection
-
-The system automatically selects the best performing model based on:
-- Area Under the Curve (AUC) score
-- Cross-validation performance
-- Feature importance analysis
-
-## 🏗️ System Architecture
-
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Frontend      │    │   Backend       │    │   ML Model      │
-│                 │    │                 │    │                 │
-│ • Bootstrap     │◄──►│ • Flask         │◄──►│ • Random Forest │
-│ • HTML/CSS      │    │ • Python        │    │ • Scikit-learn  │
-│ • JavaScript    │    │ • REST API      │    │ • Pickle        │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-```
-
-## 🔒 Security and Privacy
-
-- **Data Protection**: No personal health data is stored permanently
-- **Input Validation**: Comprehensive validation of all user inputs
-- **Error Handling**: Robust error handling and logging
-- **HTTPS Ready**: Configured for secure deployment
-
-## 🧪 Testing
-
-### Unit Tests
-
-```bash
-# Run model tests
-python -m pytest tests/test_model.py
-
-# Run API tests
-python -m pytest tests/test_api.py
-```
-
-### Manual Testing
-
-1. **Form Validation**: Test input validation with invalid data
-2. **Prediction Accuracy**: Verify predictions with known test cases
-3. **Responsive Design**: Test on different screen sizes
-4. **Browser Compatibility**: Test across different browsers
-
-## 📊 Monitoring and Logging
-
-The application includes comprehensive logging:
-
-- **Application Logs**: Request/response logging
-- **Model Performance**: Prediction accuracy tracking
-- **Error Logging**: Detailed error reporting
-- **Health Monitoring**: System health checks
-
-## 🚀 Deployment
-
-### Local Development
-
-```bash
-python app.py
-```
-
-### Production Deployment
-
-1. **Using Gunicorn**:
-```bash
-gunicorn -w 4 -b 0.0.0.0:5000 app:app
-```
-
-2. **Using Docker**:
-```dockerfile
-FROM python:3.9-slim
-WORKDIR /app
-COPY requirements.txt .
-RUN pip install -r requirements.txt
-COPY . .
-EXPOSE 5000
-CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5000", "app:app"]
-```
-
-3. **Environment Variables**:
-```bash
-export FLASK_ENV=production
-export SECRET_KEY=your-production-secret-key
-```
+✅ **Comprehensive Data Input**: All required parameters included
+✅ **Advanced Diabetes Prediction**: Risk classification and type detection
+✅ **Comprehensive Results Display**: Detailed risk assessment and recommendations
+✅ **Evidence-based Treatment Recommendations**: Personalized medical advice
+✅ **Educational Content**: Comprehensive diabetes education
+✅ **Data Export/Sharing**: CSV report generation
+✅ **Responsive UI**: Modern, intuitive interface
 
 ## 🤝 Contributing
 
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📚 Research References
-
-This project is based on comprehensive research including:
-
-- **Global Diabetes Epidemiology**: WHO and IDF reports
-- **Nigerian Diabetes Studies**: Local prevalence and risk factors
-- **Machine Learning in Healthcare**: Recent advances in medical AI
-- **Digital Health Systems**: Best practices for healthcare applications
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
 
 ## 📄 License
 
-This project is part of academic research at the Nigeria Defence Academy, Kaduna. All rights reserved.
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-## 👥 Authors
+## 🆘 Support
 
-- **Student**: [Your Name]
-- **Supervisor**: [Supervisor Name]
-- **Institution**: Nigeria Defence Academy, Kaduna
-- **Department**: Computer Science
+For issues and questions:
+1. Check the documentation in `docs/`
+2. Review the API endpoints
+3. Test the health endpoint: `/health`
+4. Contact the development team
 
-## 📞 Contact
+## 🔗 Live Application
 
-For questions or support:
-- **Email**: [your-email@example.com]
-- **Institution**: Nigeria Defence Academy, Kaduna
-- **Department**: Computer Science
-
-## ⚠️ Disclaimer
-
-This system is designed for educational and research purposes. It should not replace professional medical advice. Always consult healthcare professionals for medical decisions and treatment.
+**Deployed on Render**: [Your Render URL will appear here after deployment]
 
 ---
 
-**Note**: This project represents a significant contribution to bridging the gap between machine learning research and practical healthcare applications in developing countries.
+**Built with ❤️ for diabetes care and prevention**

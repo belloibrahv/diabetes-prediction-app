@@ -23,10 +23,10 @@ CORS(app)
 
 # Load the trained model, scaler, and encoders
 try:
-    model = pickle.load(open('model.pkl', 'rb'))
-    scaler = pickle.load(open('scaler.pkl', 'rb'))
-    label_encoders = pickle.load(open('label_encoders.pkl', 'rb'))
-    feature_names = pickle.load(open('feature_names.pkl', 'rb'))
+    model = pickle.load(open('models/model.pkl', 'rb'))
+    scaler = pickle.load(open('models/scaler.pkl', 'rb'))
+    label_encoders = pickle.load(open('models/label_encoders.pkl', 'rb'))
+    feature_names = pickle.load(open('models/feature_names.pkl', 'rb'))
     logger.info("Model, scaler, and encoders loaded successfully")
 except Exception as e:
     logger.error(f"Error loading model: {e}")
