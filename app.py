@@ -252,21 +252,46 @@ def home():
 def predict():
     """Handle diabetes prediction requests"""
     try:
-        # Get form data
-        age = float(request.form.get('Age', 0))
+        # Get form data with proper handling of empty values
+        def safe_float(value, default=0.0):
+            if value == '' or value is None:
+                return default
+            try:
+                return float(value)
+            except (ValueError, TypeError):
+                return default
+        
+        def safe_int(value, default=0):
+            if value == '' or value is None:
+                return default
+            try:
+                return int(value)
+            except (ValueError, TypeError):
+                return default
+        
+        age = safe_float(request.form.get('Age', 0))
         gender = request.form.get('Gender', '')
-        weight = float(request.form.get('Weight', 0))
-        height = float(request.form.get('Height', 0))
-        bmi = float(request.form.get('BMI', 0))
-        hba1c = float(request.form.get('HbA1c', 0))
-        blood_glucose = float(request.form.get('BloodGlucose', 0))
-        hypertension = int(request.form.get('Hypertension', 0))
-        heart_disease = int(request.form.get('HeartDisease', 0))
+        weight = safe_float(request.form.get('Weight', 0))
+        height = safe_float(request.form.get('Height', 0))
+        bmi = safe_float(request.form.get('BMI', 0))
+        hba1c = safe_float(request.form.get('HbA1c', 0))
+        blood_glucose = safe_float(request.form.get('BloodGlucose', 0))
+        hypertension = safe_int(request.form.get('Hypertension', 0))
+        heart_disease = safe_int(request.form.get('HeartDisease', 0))
         smoking_history = request.form.get('SmokingHistory', '')
         physical_activity = request.form.get('PhysicalActivity', '')
         dietary_habits = request.form.get('DietaryHabits', '')
         family_history = request.form.get('FamilyHistory', '')
         existing_conditions = request.form.get('ExistingConditions', '')
+        
+        # Validate required fields
+        if age <= 0 or bmi <= 0 or hba1c <= 0:
+            flash("Please fill in all required fields (Age, BMI, HbA1c)", "error")
+            return render_template('index.html', error="Please fill in all required fields")
+        
+        if not gender:
+            flash("Please select your gender", "error")
+            return render_template('index.html', error="Please select your gender")
         
         # Encode categorical variables
         gender_encoded = label_encoders['gender'].transform([gender])[0] if gender in label_encoders['gender'].classes_ else 0
