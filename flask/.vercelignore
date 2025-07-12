@@ -1,0 +1,36 @@
+# Large data files
+diabetes_prediction_dataset.csv
+diabetes.csv
+diabetes.ipynb
+
+# Image files (not needed for deployment)
+*.png
+*.jpg
+*.jpeg
+
+# Documentation
+NEW_Version.pdf
+NEW_Version.txt
+README.md
+DEPLOYMENT.md
+
+# Development files
+test_api.py
+model.py
+deploy.sh
+
+# Git
+.git
+.gitignore
+
+# Virtual environment
+.venv
+venv
+
+# IDE
+.vscode
+.idea
+
+# OS
+.DS_Store
+Thumbs.db 
