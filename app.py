@@ -22,12 +22,54 @@ app.secret_key = os.getenv('SECRET_KEY', 'your-secret-key-here')
 CORS(app)
 
 # Load the trained model, scaler, and encoders
+model = None
+scaler = None
+label_encoders = None
+feature_names = None
+
 try:
-    model = pickle.load(open('models/model.pkl', 'rb'))
-    scaler = pickle.load(open('models/scaler.pkl', 'rb'))
-    label_encoders = pickle.load(open('models/label_encoders.pkl', 'rb'))
-    feature_names = pickle.load(open('models/feature_names.pkl', 'rb'))
-    logger.info("Model, scaler, and encoders loaded successfully")
+    import os
+    # Get the current directory
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    models_dir = os.path.join(current_dir, 'models')
+    
+    # Load model files with better error handling
+    model_path = os.path.join(models_dir, 'model.pkl')
+    scaler_path = os.path.join(models_dir, 'scaler.pkl')
+    encoders_path = os.path.join(models_dir, 'label_encoders.pkl')
+    features_path = os.path.join(models_dir, 'feature_names.pkl')
+    
+    # Check if files exist
+    if os.path.exists(model_path):
+        model = pickle.load(open(model_path, 'rb'))
+        logger.info("Model loaded successfully")
+    else:
+        logger.error(f"Model file not found at: {model_path}")
+    
+    if os.path.exists(scaler_path):
+        scaler = pickle.load(open(scaler_path, 'rb'))
+        logger.info("Scaler loaded successfully")
+    else:
+        logger.error(f"Scaler file not found at: {scaler_path}")
+    
+    if os.path.exists(encoders_path):
+        label_encoders = pickle.load(open(encoders_path, 'rb'))
+        logger.info("Label encoders loaded successfully")
+    else:
+        logger.error(f"Label encoders file not found at: {encoders_path}")
+    
+    if os.path.exists(features_path):
+        feature_names = pickle.load(open(features_path, 'rb'))
+        logger.info("Feature names loaded successfully")
+    else:
+        logger.error(f"Feature names file not found at: {features_path}")
+    
+    # Check if all components are loaded
+    if model is not None and scaler is not None and label_encoders is not None:
+        logger.info("All model components loaded successfully")
+    else:
+        logger.error("Some model components failed to load")
+        
 except Exception as e:
     logger.error(f"Error loading model: {e}")
     model = None
@@ -293,6 +335,11 @@ def predict():
             flash("Please select your gender", "error")
             return render_template('index.html', error="Please select your gender")
         
+        # Check if label_encoders are available
+        if label_encoders is None:
+            flash("Error: Model encoders not available", "error")
+            return render_template('index.html', error="Model encoders not available. Please try again later.")
+        
         # Encode categorical variables
         gender_encoded = label_encoders['gender'].transform([gender])[0] if gender in label_encoders['gender'].classes_ else 0
         smoking_encoded = label_encoders['smoking_history'].transform([smoking_history])[0] if smoking_history in label_encoders['smoking_history'].classes_ else 0
@@ -379,6 +426,10 @@ def api_predict():
         hypertension = int(data.get('Hypertension', 0))
         heart_disease = int(data.get('HeartDisease', 0))
         smoking_history = data.get('SmokingHistory', '')
+        
+        # Check if label_encoders are available
+        if label_encoders is None:
+            return jsonify({"error": "Model encoders not available"}), 500
         
         # Encode categorical variables
         gender_encoded = label_encoders['gender'].transform([gender])[0] if gender in label_encoders['gender'].classes_ else 0
