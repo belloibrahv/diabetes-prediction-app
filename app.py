@@ -33,6 +33,20 @@ try:
     current_dir = os.path.dirname(os.path.abspath(__file__))
     models_dir = os.path.join(current_dir, 'models')
     
+    # Debug: Log the current directory and models directory
+    logger.info(f"Current directory: {current_dir}")
+    logger.info(f"Models directory: {models_dir}")
+    
+    # List all files in the current directory
+    logger.info(f"Files in current directory: {os.listdir(current_dir)}")
+    
+    # Check if models directory exists
+    if os.path.exists(models_dir):
+        logger.info(f"Models directory exists: {models_dir}")
+        logger.info(f"Files in models directory: {os.listdir(models_dir)}")
+    else:
+        logger.error(f"Models directory does not exist: {models_dir}")
+    
     # Load model files with better error handling
     model_path = os.path.join(models_dir, 'model.pkl')
     scaler_path = os.path.join(models_dir, 'scaler.pkl')
@@ -41,24 +55,28 @@ try:
     
     # Check if files exist
     if os.path.exists(model_path):
+        logger.info(f"Model file found at: {model_path}")
         model = pickle.load(open(model_path, 'rb'))
         logger.info("Model loaded successfully")
     else:
         logger.error(f"Model file not found at: {model_path}")
     
     if os.path.exists(scaler_path):
+        logger.info(f"Scaler file found at: {scaler_path}")
         scaler = pickle.load(open(scaler_path, 'rb'))
         logger.info("Scaler loaded successfully")
     else:
         logger.error(f"Scaler file not found at: {scaler_path}")
     
     if os.path.exists(encoders_path):
+        logger.info(f"Label encoders file found at: {encoders_path}")
         label_encoders = pickle.load(open(encoders_path, 'rb'))
         logger.info("Label encoders loaded successfully")
     else:
         logger.error(f"Label encoders file not found at: {encoders_path}")
     
     if os.path.exists(features_path):
+        logger.info(f"Feature names file found at: {features_path}")
         feature_names = pickle.load(open(features_path, 'rb'))
         logger.info("Feature names loaded successfully")
     else:
@@ -72,6 +90,8 @@ try:
         
 except Exception as e:
     logger.error(f"Error loading model: {e}")
+    import traceback
+    logger.error(f"Traceback: {traceback.format_exc()}")
     model = None
     scaler = None
     label_encoders = None
@@ -561,6 +581,31 @@ def health_check():
         "encoders_loaded": label_encoders is not None,
         "timestamp": datetime.now().isoformat()
     })
+
+@app.route('/debug')
+def debug():
+    """Debug endpoint to check file availability"""
+    import os
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    models_dir = os.path.join(current_dir, 'models')
+    
+    debug_info = {
+        "current_directory": current_dir,
+        "models_directory": models_dir,
+        "models_directory_exists": os.path.exists(models_dir),
+        "files_in_current_dir": os.listdir(current_dir) if os.path.exists(current_dir) else [],
+        "files_in_models_dir": os.listdir(models_dir) if os.path.exists(models_dir) else [],
+        "model_file_exists": os.path.exists(os.path.join(models_dir, 'model.pkl')),
+        "scaler_file_exists": os.path.exists(os.path.join(models_dir, 'scaler.pkl')),
+        "encoders_file_exists": os.path.exists(os.path.join(models_dir, 'label_encoders.pkl')),
+        "features_file_exists": os.path.exists(os.path.join(models_dir, 'feature_names.pkl')),
+        "model_loaded": model is not None,
+        "scaler_loaded": scaler is not None,
+        "encoders_loaded": label_encoders is not None,
+        "features_loaded": feature_names is not None
+    }
+    
+    return jsonify(debug_info)
 
 @app.errorhandler(404)
 def not_found(error):
