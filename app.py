@@ -607,6 +607,46 @@ def debug():
     
     return jsonify(debug_info)
 
+@app.route('/test-load')
+def test_load():
+    """Test endpoint to try loading models with detailed error info"""
+    import os
+    import pickle
+    
+    results = {}
+    
+    try:
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        models_dir = os.path.join(current_dir, 'models')
+        
+        # Test each file individually
+        files_to_test = ['model.pkl', 'scaler.pkl', 'label_encoders.pkl', 'feature_names.pkl']
+        
+        for filename in files_to_test:
+            file_path = os.path.join(models_dir, filename)
+            results[filename] = {
+                'exists': os.path.exists(file_path),
+                'size': os.path.getsize(file_path) if os.path.exists(file_path) else 0,
+                'loaded': False,
+                'error': None
+            }
+            
+            if os.path.exists(file_path):
+                try:
+                    with open(file_path, 'rb') as f:
+                        data = pickle.load(f)
+                    results[filename]['loaded'] = True
+                    results[filename]['type'] = str(type(data))
+                except Exception as e:
+                    results[filename]['error'] = str(e)
+                    import traceback
+                    results[filename]['traceback'] = traceback.format_exc()
+        
+        return jsonify(results)
+        
+    except Exception as e:
+        return jsonify({'error': str(e), 'traceback': traceback.format_exc()})
+
 @app.errorhandler(404)
 def not_found(error):
     return render_template('index.html', error="Page not found"), 404
