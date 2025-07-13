@@ -1,246 +1,214 @@
 # Render Deployment Guide for Diabetes Prediction App
 
-This guide follows the official Render documentation for deploying ML-driven Flask applications.
+## 🚀 Deployment Status: FIXED ✅
 
-## 🚀 Prerequisites
+### Latest Changes Made:
+- ✅ Updated `numpy` from 1.27.2 → 2.3.1 (version that actually exists)
+- ✅ Updated Python version to 3.13.4 (matching Render's default)
+- ✅ Added `python-dotenv==1.0.0` to requirements.txt
+- ✅ Synchronized all version specifications across files
 
-- GitHub repository with your code ✅ **COMPLETED**
-- Render account (free tier available)
-- Python 3.11+ compatibility ✅ **COMPLETED**
+## 📋 Current Configuration Files
 
-## 📁 Project Structure (Optimized for Render)
-
+### `requirements.txt`
 ```
-diabetes-prediction-app/
-├── app.py                 # Main Flask application ✅
-├── requirements.txt       # Python dependencies ✅
-├── Procfile              # Render process configuration ✅
-├── runtime.txt           # Python version specification ✅
-├── models/               # ML model files ✅
-│   ├── model.pkl        # Trained ML model
-│   ├── scaler.pkl       # Feature scaler
-│   ├── label_encoders.pkl # Label encoders
-│   └── feature_names.pkl # Feature names
-├── static/               # Static files ✅
-│   └── css/
-│       └── style.css    # Application styles
-├── templates/            # HTML templates ✅
-│   └── index.html       # Main application template
-└── docs/                # Documentation and assets ✅
-```
-
-## ✅ Pre-Deployment Checklist
-
-### Repository Status
-- [x] **GitHub Repository**: `belloibrahv/diabetes-prediction-app`
-- [x] **Latest Changes**: Pushed with modern UI redesign
-- [x] **Clean Structure**: All files in correct locations
-- [x] **Model Files**: All ML models in `models/` directory
-- [x] **Dependencies**: `requirements.txt` with compatible versions
-- [x] **Configuration**: `Procfile` and `runtime.txt` ready
-
-### Application Features
-- [x] **Health Check**: `/health` endpoint implemented
-- [x] **API Endpoints**: `/predict`, `/api/predict`, `/export-report`
-- [x] **Error Handling**: Comprehensive error handling
-- [x] **Input Validation**: Robust data validation
-- [x] **Modern UI**: Healthcare-inspired design
-- [x] **Responsive Design**: Mobile-friendly interface
-
-## 🛠️ Deployment Steps
-
-### Step 1: Deploy to Render
-
-1. **Go to Render Dashboard**
-   - Visit [dashboard.render.com](https://dashboard.render.com)
-   - Sign in or create account
-
-2. **Create New Web Service**
-   - Click "New +" button
-   - Select "Web Service"
-
-3. **Connect GitHub Repository**
-   - Click "Connect" next to GitHub
-   - Authorize Render to access your repositories
-   - Select `belloibrahv/diabetes-prediction-app`
-
-4. **Configure the Service**
-   - **Name**: `diabetes-prediction-app` (or your preferred name)
-   - **Environment**: `Python 3`
-   - **Region**: Choose closest to your users
-   - **Branch**: `main`
-   - **Root Directory**: Leave empty (uses repository root)
-   - **Build Command**: `pip install -r requirements.txt`
-   - **Start Command**: `gunicorn app:app`
-
-5. **Advanced Settings (Recommended)**
-   - **Auto-Deploy**: Enabled ✅
-   - **Health Check Path**: `/health`
-   - **Health Check Timeout**: 300 seconds
-
-6. **Environment Variables (Optional)**
-   ```
-   FLASK_ENV=production
-   SECRET_KEY=your-secret-key-here
-   ```
-
-7. **Click "Create Web Service"**
-
-### Step 2: Monitor Deployment
-
-1. **Build Process** (2-3 minutes)
-   - Render will install dependencies from `requirements.txt`
-   - Watch the build logs for any errors
-   - Verify all model files are accessible
-
-2. **Startup Process** (1-2 minutes)
-   - Gunicorn will start the Flask application
-   - Health check will verify `/health` endpoint
-   - Service becomes available at provided URL
-
-## 🔧 Configuration Files
-
-### `requirements.txt` ✅
-```txt
 Flask==3.0.0
 Werkzeug==3.0.1
-pandas==2.0.3
-numpy==1.24.3
-scikit-learn==1.3.0
+pandas==2.3.1
+numpy==2.3.1
+scikit-learn==1.7.0
+joblib==1.4.2
 gunicorn==21.2.0
 python-dotenv==1.0.0
-flask-cors==4.0.0
 ```
 
-### `Procfile` ✅
-```txt
+### `runtime.txt`
+```
+python-3.13.4
+```
+
+### `render.yaml`
+```yaml
+services:
+  - type: web
+    name: diabetes-prediction-app
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.4
+      - key: PYTHONPATH
+        value: .
+```
+
+### `Procfile`
+```
 web: gunicorn app:app
 ```
 
-### `runtime.txt` ✅
-```txt
-python-3.11
-```
+## 🔧 Deployment Steps
 
-## 🧪 Testing Your Deployment
-
-### Health Check
+### 1. Push Changes to GitHub
 ```bash
-curl https://your-app-name.onrender.com/health
-```
-Expected response:
-```json
-{
-  "status": "healthy",
-  "model_loaded": true,
-  "scaler_loaded": true,
-  "encoders_loaded": true,
-  "timestamp": "2025-07-12T..."
-}
+git add .
+git commit -m "Fix Python version compatibility for Render deployment"
+git push origin main
 ```
 
-### Web Interface
-- Visit your Render URL in a browser
-- Test the form submission with sample data
-- Verify results display correctly
-- Test export functionality
+### 2. Deploy on Render
+1. Go to [Render Dashboard](https://dashboard.render.com/)
+2. Click "New +" → "Web Service"
+3. Connect your GitHub repository: `belloibrahv/diabetes-prediction-app`
+4. Configure the service:
+   - **Name**: `diabetes-prediction-app`
+   - **Environment**: `Python`
+   - **Build Command**: `pip install -r requirements.txt`
+   - **Start Command**: `gunicorn app:app`
+   - **Plan**: `Free`
 
-### API Testing
+### 3. Environment Variables (Optional)
+Add these in Render dashboard if needed:
+- `SECRET_KEY`: Your Flask secret key
+- `PYTHONPATH`: `.`
+
+## 📚 Official Documentation References
+
+### Render Documentation
+- [Python Version Specification](https://render.com/docs/python-version)
+- [Python Web Services](https://render.com/docs/deploy-python-web-services)
+- [Troubleshooting Deploys](https://render.com/docs/troubleshooting-deploys)
+- [Environment Variables](https://render.com/docs/environment-variables)
+
+### Package Compatibility
+- [NumPy Release Notes](https://numpy.org/doc/stable/release.html)
+- [Pandas Compatibility](https://pandas.pydata.org/docs/getting_started/install.html)
+- [Scikit-learn Installation](https://scikit-learn.org/stable/install.html)
+
+### Flask Deployment
+- [Flask Deployment Guide](https://flask.palletsprojects.com/en/3.0.x/deploying/)
+- [Gunicorn Configuration](https://docs.gunicorn.org/en/stable/configure.html)
+
+## 🐛 Common Issues & Solutions
+
+### Issue 1: Package Version Not Found
+**Error**: `ERROR: No matching distribution found for numpy==1.27.2`
+
+**Solution**: 
+- Check available versions: `pip index versions numpy`
+- Use existing versions only
+- Reference: [PyPI NumPy](https://pypi.org/project/numpy/#history)
+
+### Issue 2: Python Version Mismatch
+**Error**: Package requires different Python version
+
+**Solution**:
+- Use `runtime.txt` to specify Python version
+- Ensure package versions are compatible
+- Reference: [Render Python Version Docs](https://render.com/docs/python-version)
+
+### Issue 3: Missing Dependencies
+**Error**: `ModuleNotFoundError: No module named 'dotenv'`
+
+**Solution**:
+- Add missing packages to `requirements.txt`
+- Check all imports in your code
+- Reference: [Python Package Installation](https://packaging.python.org/tutorials/installing-packages/)
+
+### Issue 4: Build Timeout
+**Error**: Build process times out
+
+**Solution**:
+- Optimize `requirements.txt` (remove unused packages)
+- Use specific versions instead of ranges
+- Reference: [Render Build Optimization](https://render.com/docs/build-optimization)
+
+## 🔍 Debugging Commands
+
+### Local Testing
 ```bash
-curl -X POST https://your-app-name.onrender.com/api/predict \
-  -H "Content-Type: application/json" \
-  -d '{
-    "Age": 45,
-    "Gender": "Male",
-    "BMI": 28.5,
-    "HbA1c": 6.2,
-    "Hypertension": 1,
-    "HeartDisease": 0,
-    "SmokingHistory": "former"
-  }'
-```
+# Test requirements installation
+pip install -r requirements.txt
 
-## 🔍 Troubleshooting
-
-### Common Issues
-
-1. **Build Failures**
-   - ✅ All dependencies are compatible
-   - ✅ Python version is specified correctly
-   - ✅ Model files are in correct location
-
-2. **Model Loading Errors**
-   - ✅ Model files are committed to Git
-   - ✅ File paths are correct (`models/` directory)
-   - ✅ File permissions are appropriate
-
-3. **Startup Failures**
-   - ✅ `Procfile` syntax is correct
-   - ✅ `app.py` exists and is properly configured
-   - ✅ Gunicorn is listed in requirements
-
-4. **Health Check Failures**
-   - ✅ `/health` endpoint is implemented
-   - ✅ Application logs are accessible
-   - ✅ All model files are accessible
-
-### Debugging Commands
-
-```bash
-# Check application logs in Render dashboard
-# Available under "Logs" tab
-
-# Test local deployment
+# Test Flask app locally
 python app.py
 
-# Test with gunicorn locally
+# Test with Gunicorn locally
 gunicorn app:app
-
-# Check model loading
-python -c "import pickle; pickle.load(open('models/model.pkl', 'rb'))"
 ```
 
-## 📊 Performance Optimization
+### Render Logs
+- Check build logs in Render dashboard
+- Look for specific error messages
+- Use Render's log streaming feature
 
-### Render Free Tier Limits
-- **Build Time**: 15 minutes
-- **Request Timeout**: 30 seconds
-- **Memory**: 512 MB
-- **Sleep**: Services sleep after 15 minutes of inactivity
+## 📊 Health Check Endpoints
 
-### Optimization Tips
-1. **Model Size**: Models are optimized and under 100MB ✅
-2. **Dependencies**: Only necessary packages included ✅
-3. **Static Files**: Optimized CSS and assets ✅
-4. **Error Handling**: Comprehensive error management ✅
+Your app includes these endpoints for monitoring:
+- `/health` - Basic health check
+- `/` - Main application
+- `/predict` - Prediction endpoint
+- `/api/predict` - API endpoint
 
-## 🎯 Deployment Success Indicators
+## 🎯 Best Practices
 
-### ✅ Ready for Deployment
-- [x] All files committed to GitHub
-- [x] Clean project structure
-- [x] Proper configuration files
-- [x] Health check endpoint
-- [x] Error handling
-- [x] Input validation
-- [x] Modern UI implementation
-- [x] Responsive design
-- [x] API endpoints working
-- [x] Export functionality
+### 1. Version Pinning
+- Always use specific versions in `requirements.txt`
+- Avoid using `>=` or `~=` for production
 
-### 🚀 Next Steps
-1. **Deploy to Render** using the steps above
-2. **Test the deployment** with health check
-3. **Verify all features** work correctly
-4. **Monitor performance** in Render dashboard
-5. **Share the URL** with users
+### 2. Python Version
+- Use stable Python versions (3.11, 3.12, 3.13)
+- Match runtime.txt with render.yaml
 
-## 📞 Support
+### 3. Dependencies
+- Only include necessary packages
+- Keep requirements.txt minimal
+- Test locally before deploying
 
-If you encounter any issues during deployment:
-1. Check the Render build logs
-2. Verify all files are in the correct locations
-3. Test the application locally first
-4. Review the troubleshooting section above
+### 4. Environment Variables
+- Use environment variables for secrets
+- Don't commit sensitive data
+- Use Render's environment variable feature
 
-Your application is now ready for deployment to Render! 🎉 
+## 🚨 Emergency Rollback
+
+If deployment fails:
+1. Check Render logs for specific errors
+2. Revert to previous working commit
+3. Test locally with exact same environment
+4. Update package versions if needed
+
+## 📞 Support Resources
+
+- [Render Support](https://render.com/docs/help)
+- [Flask Documentation](https://flask.palletsprojects.com/)
+- [Python Packaging User Guide](https://packaging.python.org/)
+- [Gunicorn Documentation](https://docs.gunicorn.org/)
+
+## ✅ Deployment Checklist
+
+- [ ] All files committed to GitHub
+- [ ] requirements.txt has correct versions
+- [ ] runtime.txt specifies Python version
+- [ ] render.yaml is configured
+- [ ] Procfile is present
+- [ ] Model files are in models/ directory
+- [ ] Local testing passes
+- [ ] Render service is created
+- [ ] Build completes successfully
+- [ ] App is accessible via URL
+
+## 🎉 Success Indicators
+
+When deployment is successful, you should see:
+- ✅ Build status: "Build successful"
+- ✅ Service status: "Live"
+- ✅ App accessible at: `https://your-app-name.onrender.com`
+- ✅ Health check endpoint responds
+- ✅ Prediction form loads correctly
+
+---
+
+**Last Updated**: December 2024
+**Status**: Ready for Deployment ✅ 
