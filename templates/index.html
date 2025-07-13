@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+  <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DiabetesCare AI - Advanced Diabetes Prediction & Treatment System</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <style>
         :root {
             --primary-color: #2563eb;
@@ -357,7 +357,7 @@
                     <div class="text-center mb-5">
                         <h2 class="section-title">Comprehensive Diabetes Risk Assessment</h2>
                         <p class="section-subtitle">Complete the assessment below for personalized analysis and evidence-based recommendations</p>
-                    </div>
+                        </div>
 
                     <div class="healthcare-card">
                         <div class="card-body p-5">
@@ -374,28 +374,28 @@
                                         <div class="form-section-icon bg-primary bg-opacity-10 text-primary">
                                             <i class="fas fa-user"></i>
                                         </div>
-                                        <div>
+                                    <div>
                                             <h4 class="mb-1">Basic Demographics</h4>
                                             <p class="text-muted mb-0">Personal information for risk assessment</p>
-                                        </div>
                                     </div>
+                                </div>
                                     <div class="row">
-                                        <div class="col-md-6">
+                                    <div class="col-md-6">
                                             <div class="form-floating">
                                                 <input type="number" class="form-control" id="age" name="Age" placeholder="Enter your age" min="18" max="120" required>
                                                 <label for="age">Age (years) *</label>
-                                                <div class="form-text">Enter your current age between 18-120 years</div>
-                                            </div>
+                                            <div class="form-text">Enter your current age between 18-120 years</div>
                                         </div>
-                                        <div class="col-md-6">
+                                    </div>
+                                    <div class="col-md-6">
                                             <div class="form-floating">
-                                                <select class="form-select" id="gender" name="Gender" required>
-                                                    <option value="">Choose your gender</option>
-                                                    <option value="Male">Male</option>
-                                                    <option value="Female">Female</option>
-                                                </select>
+                                            <select class="form-select" id="gender" name="Gender" required>
+                                                <option value="">Choose your gender</option>
+                                                <option value="Male">Male</option>
+                                                <option value="Female">Female</option>
+                                            </select>
                                                 <label for="gender">Gender *</label>
-                                                <div class="form-text">Select your biological gender</div>
+                                            <div class="form-text">Select your biological gender</div>
                                             </div>
                                         </div>
                                     </div>
@@ -406,28 +406,28 @@
                                     <div class="form-section-header">
                                         <div class="form-section-icon bg-success bg-opacity-10 text-success">
                                             <i class="fas fa-weight"></i>
-                                        </div>
+                                    </div>
                                         <div>
                                             <h4 class="mb-1">Body Measurements</h4>
                                             <p class="text-muted mb-0">Physical measurements for BMI calculation</p>
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-md-4">
+                                    <div class="col-md-4">
                                             <div class="form-floating">
                                                 <input type="number" class="form-control" id="weight" name="Weight" placeholder="Enter weight in kg" min="30" max="300" step="0.1">
-                                                <label for="weight">Weight (kg)</label>
-                                                <div class="form-text">Enter your current weight in kilograms</div>
-                                            </div>
+                                            <label for="weight">Weight (kg)</label>
+                                            <div class="form-text">Enter your current weight in kilograms</div>
                                         </div>
-                                        <div class="col-md-4">
+                                    </div>
+                                    <div class="col-md-4">
                                             <div class="form-floating">
                                                 <input type="number" class="form-control" id="height" name="Height" placeholder="Enter height in cm" min="100" max="250" step="0.1">
-                                                <label for="height">Height (cm)</label>
-                                                <div class="form-text">Enter your height in centimeters</div>
-                                            </div>
+                                            <label for="height">Height (cm)</label>
+                                            <div class="form-text">Enter your height in centimeters</div>
                                         </div>
-                                        <div class="col-md-4">
+                                    </div>
+                                    <div class="col-md-4">
                                             <div class="form-floating">
                                                 <input type="number" class="form-control" id="bmi" name="BMI" placeholder="Enter BMI" min="15" max="60" step="0.1" required>
                                                 <label for="bmi">BMI (kg/m²) *</label>
@@ -442,25 +442,25 @@
                                     <div class="form-section-header">
                                         <div class="form-section-icon bg-warning bg-opacity-10 text-warning">
                                             <i class="fas fa-flask"></i>
-                                        </div>
+                                    </div>
                                         <div>
                                             <h4 class="mb-1">Clinical Indicators</h4>
                                             <p class="text-muted mb-0">Medical test results and vital signs</p>
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-md-6">
+                                    <div class="col-md-6">
                                             <div class="form-floating">
                                                 <input type="number" class="form-control" id="hba1c" name="HbA1c" placeholder="Enter HbA1c level" min="3.5" max="9.0" step="0.1" required>
                                                 <label for="hba1c">HbA1c Level (%) *</label>
-                                                <div class="form-text">Glycated hemoglobin - most important indicator for diabetes risk</div>
-                                            </div>
+                                            <div class="form-text">Glycated hemoglobin - most important indicator for diabetes risk</div>
                                         </div>
-                                        <div class="col-md-6">
+                                    </div>
+                                    <div class="col-md-6">
                                             <div class="form-floating">
                                                 <input type="number" class="form-control" id="bloodGlucose" name="BloodGlucose" placeholder="Enter blood glucose" min="50" max="500" step="1">
-                                                <label for="bloodGlucose">Blood Glucose Level (mg/dL)</label>
-                                                <div class="form-text">Fasting blood glucose level (optional for reference)</div>
+                                            <label for="bloodGlucose">Blood Glucose Level (mg/dL)</label>
+                                            <div class="form-text">Fasting blood glucose level (optional for reference)</div>
                                             </div>
                                         </div>
                                     </div>
@@ -471,60 +471,60 @@
                                     <div class="form-section-header">
                                         <div class="form-section-icon bg-danger bg-opacity-10 text-danger">
                                             <i class="fas fa-heartbeat"></i>
-                                        </div>
+                                            </div>
                                         <div>
                                             <h4 class="mb-1">Medical Conditions</h4>
                                             <p class="text-muted mb-0">Existing health conditions and risk factors</p>
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-md-6">
+                                    <div class="col-md-6">
                                             <div class="form-floating">
-                                                <select class="form-select" id="hypertension" name="Hypertension" required>
-                                                    <option value="">Select hypertension status</option>
-                                                    <option value="0">No Hypertension</option>
-                                                    <option value="1">Has Hypertension</option>
-                                                </select>
+                                            <select class="form-select" id="hypertension" name="Hypertension" required>
+                                                <option value="">Select hypertension status</option>
+                                                <option value="0">No Hypertension</option>
+                                                <option value="1">Has Hypertension</option>
+                                            </select>
                                                 <label for="hypertension">Hypertension *</label>
-                                                <div class="form-text">High blood pressure condition</div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="form-floating">
-                                                <select class="form-select" id="heartDisease" name="HeartDisease" required>
-                                                    <option value="">Select heart disease status</option>
-                                                    <option value="0">No Heart Disease</option>
-                                                    <option value="1">Has Heart Disease</option>
-                                                </select>
-                                                <label for="heartDisease">Heart Disease *</label>
-                                                <div class="form-text">Cardiovascular conditions</div>
-                                            </div>
+                                            <div class="form-text">High blood pressure condition</div>
                                         </div>
                                     </div>
-                                    <div class="row">
-                                        <div class="col-md-6">
+                                    <div class="col-md-6">
                                             <div class="form-floating">
-                                                <select class="form-select" id="smokingHistory" name="SmokingHistory" required>
+                                            <select class="form-select" id="heartDisease" name="HeartDisease" required>
+                                                <option value="">Select heart disease status</option>
+                                                <option value="0">No Heart Disease</option>
+                                                <option value="1">Has Heart Disease</option>
+                                            </select>
+                                                <label for="heartDisease">Heart Disease *</label>
+                                                <div class="form-text">Cardiovascular conditions</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                    <div class="row">
+                                    <div class="col-md-6">
+                                            <div class="form-floating">
+                                            <select class="form-select" id="smokingHistory" name="SmokingHistory" required>
                                                     <option value="">Select smoking history</option>
-                                                    <option value="never">Never Smoked</option>
-                                                    <option value="current">Current Smoker</option>
-                                                    <option value="former">Former Smoker</option>
-                                                    <option value="No Info">No Information</option>
-                                                </select>
+                                                <option value="never">Never Smoked</option>
+                                                <option value="current">Current Smoker</option>
+                                                <option value="former">Former Smoker</option>
+                                                <option value="No Info">No Information</option>
+                                            </select>
                                                 <label for="smokingHistory">Smoking History *</label>
                                                 <div class="form-text">Tobacco use history</div>
-                                            </div>
                                         </div>
-                                        <div class="col-md-6">
+                                    </div>
+                                    <div class="col-md-6">
                                             <div class="form-floating">
-                                                <select class="form-select" id="physicalActivity" name="PhysicalActivity">
+                                            <select class="form-select" id="physicalActivity" name="PhysicalActivity">
                                                     <option value="">Select activity level</option>
                                                     <option value="sedentary">Sedentary</option>
                                                     <option value="light">Light Activity</option>
                                                     <option value="moderate">Moderate Activity</option>
                                                     <option value="active">Very Active</option>
-                                                </select>
-                                                <label for="physicalActivity">Physical Activity Level</label>
+                                            </select>
+                                            <label for="physicalActivity">Physical Activity Level</label>
                                                 <div class="form-text">Regular exercise and activity level</div>
                                             </div>
                                         </div>
@@ -536,44 +536,44 @@
                                     <div class="form-section-header">
                                         <div class="form-section-icon bg-info bg-opacity-10 text-info">
                                             <i class="fas fa-users"></i>
-                                        </div>
+                                            </div>
                                         <div>
                                             <h4 class="mb-1">Lifestyle & Family History</h4>
                                             <p class="text-muted mb-0">Lifestyle factors and family medical history</p>
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-md-6">
+                                    <div class="col-md-6">
                                             <div class="form-floating">
-                                                <select class="form-select" id="dietaryHabits" name="DietaryHabits">
+                                            <select class="form-select" id="dietaryHabits" name="DietaryHabits">
                                                     <option value="">Select dietary habits</option>
                                                     <option value="healthy">Healthy Diet</option>
                                                     <option value="moderate">Moderate Diet</option>
                                                     <option value="unhealthy">Unhealthy Diet</option>
-                                                </select>
-                                                <label for="dietaryHabits">Dietary Habits</label>
+                                            </select>
+                                            <label for="dietaryHabits">Dietary Habits</label>
                                                 <div class="form-text">Overall eating patterns and nutrition</div>
-                                            </div>
                                         </div>
-                                        <div class="col-md-6">
+                                    </div>
+                                    <div class="col-md-6">
                                             <div class="form-floating">
-                                                <select class="form-select" id="familyHistory" name="FamilyHistory">
+                                            <select class="form-select" id="familyHistory" name="FamilyHistory">
                                                     <option value="">Select family history</option>
                                                     <option value="none">No Family History</option>
                                                     <option value="parent">Parent with Diabetes</option>
                                                     <option value="sibling">Sibling with Diabetes</option>
                                                     <option value="multiple">Multiple Family Members</option>
-                                                </select>
-                                                <label for="familyHistory">Family History of Diabetes</label>
+                                            </select>
+                                            <label for="familyHistory">Family History of Diabetes</label>
                                                 <div class="form-text">Diabetes in immediate family members</div>
-                                            </div>
                                         </div>
+                                            </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-12">
+                                    <div class="col-12">
                                             <div class="form-floating">
                                                 <textarea class="form-control" id="existingConditions" name="ExistingConditions" placeholder="Enter any existing medical conditions" style="height: 100px"></textarea>
-                                                <label for="existingConditions">Existing Medical Conditions</label>
+                                            <label for="existingConditions">Existing Medical Conditions</label>
                                                 <div class="form-text">List any other medical conditions or medications</div>
                                             </div>
                                         </div>
@@ -605,13 +605,13 @@
                                             <div class="risk-indicator risk-{{ risk_color|default('info') }}">
                                                 <i class="fas fa-shield-alt me-2"></i>
                                                 Risk Level: {{ risk_level|default('Unknown') }}
-                                            </div>
+                                                    </div>
                                             <p class="mb-0 mt-3">{{ prediction_text }}</p>
-                                        </div>
+                                                </div>
                                         <div class="col-md-4 text-center">
                                             <div class="confidence-meter">
                                                 <div class="confidence-fill" style="width: {{ prediction_probability|default('50%') }}"></div>
-                                            </div>
+                                          </div>
                                             <p class="mt-2 mb-0">Confidence: {{ prediction_probability|default('50%') }}</p>
                                         </div>
                                     </div>
@@ -638,36 +638,36 @@
                                                 </div>
                                                 <small class="text-muted">Body mass index</small>
                                             </div>
-                                        </div>
+                                      </div>
+                                      </div>
                                     </div>
-                                </div>
 
-                                <!-- Recommendations -->
-                                {% if recommendations %}
+                                                    <!-- Recommendations -->
+                                                    {% if recommendations %}
                                 <div class="row mt-4">
                                     <div class="col-12">
                                         <h4 class="text-primary mb-4"><i class="fas fa-lightbulb me-2"></i>Personalized Recommendations</h4>
-                                    </div>
-                                    {% for category, items in recommendations.items() %}
-                                    {% if items %}
+                                      </div>
+                                                                {% for category, items in recommendations.items() %}
+                                                                {% if items %}
                                     <div class="col-md-6 col-lg-4 mb-4">
                                         <div class="recommendation-card {% if category == 'immediate' %}urgent{% elif category == 'medical' %}important{% endif %}">
                                             <h6 class="text-primary mb-3">
-                                                <i class="fas fa-arrow-right me-2"></i>{{ category.title() }}
-                                            </h6>
+                                                                        <i class="fas fa-arrow-right me-2"></i>{{ category.title() }}
+                                                                    </h6>
                                             <ul class="list-unstyled mb-0">
-                                                {% for item in items %}
-                                                <li class="mb-2">
-                                                    <i class="fas fa-check-circle text-success me-2"></i>{{ item }}
-                                                </li>
-                                                {% endfor %}
-                                            </ul>
+                                                                        {% for item in items %}
+                                                                        <li class="mb-2">
+                                                                            <i class="fas fa-check-circle text-success me-2"></i>{{ item }}
+                                                                        </li>
+                                                                        {% endfor %}
+                                        </ul>
                                         </div>
-                                    </div>
-                                    {% endif %}
-                                    {% endfor %}
-                                </div>
-                                {% endif %}
+                                      </div>
+                                                                {% endif %}
+                                                                {% endfor %}
+                                                    </div>
+                                                    {% endif %}
 
                                 <!-- Action Buttons -->
                                 <div class="row mt-4">
@@ -682,14 +682,14 @@
                                             <i class="fas fa-graduation-cap me-2"></i>Learn More
                                         </button>
                                     </div>
-                                </div>
-                            </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+                                                            </div>
+                                                        </div>
+                                                            {% endif %}
+                                      </div>
+                                    </div>
+                                                        </div>
+                                                        </div>
+                                                    </div>
     </section>
 
     <!-- Detailed Results Modal -->
@@ -704,23 +704,23 @@
                         <div class="flex-grow-1">
                             <h4 class="modal-title mb-0">Detailed Assessment Results</h4>
                             <div class="small text-muted">Comprehensive analysis and recommendations</div>
-                        </div>
+                                                </div>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                </div>
+                                            </div>
+                                  </div>
                 <div class="modal-body p-4">
                     <!-- Detailed content will be populated here -->
-                </div>
-            </div>
-        </div>
-    </div>
+                                        </div>
+                                </div>
+                              </div>
+                            </div>
 
     <!-- Floating Help Button -->
     <div class="floating-help">
         <button class="help-btn" onclick="showHelp()">
             <i class="fas fa-question"></i>
         </button>
-    </div>
+                        </div>
 
     <!-- Education Section -->
     <section id="education" class="py-5">
@@ -763,7 +763,7 @@
                             </ul>
                         </div>
                     </div>
-                </div>
+                            </div>
                 <div class="col-md-6 col-lg-4">
                     <div class="healthcare-card h-100">
                         <div class="card-header bg-warning text-dark">
@@ -904,18 +904,18 @@
             }
 
             // Smooth scrolling
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    const target = document.querySelector(this.getAttribute('href'));
-                    if (target) {
-                        target.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start'
-                        });
-                    }
-                });
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
             });
+        });
         });
 
         // Global functions
@@ -997,10 +997,10 @@
             setTimeout(() => {
                 if (alertDiv.parentNode) {
                     alertDiv.remove();
-                }
+            }
             }, 5000);
-        }
-    </script>
+    }
+</script>
 </body>
 </html>
 
