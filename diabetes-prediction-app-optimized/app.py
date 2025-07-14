@@ -9,7 +9,6 @@ import logging
 from dotenv import load_dotenv
 import io
 import csv
-import numpy as np
 
 # Load environment variables
 load_dotenv()
@@ -28,93 +27,75 @@ scaler = None
 label_encoders = None
 feature_names = None
 
-def load_models():
-    """Load all model components with robust error handling"""
-    global model, scaler, label_encoders, feature_names
+try:
+    import os
+    # Get the current directory
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    models_dir = os.path.join(current_dir, 'models')
     
-    try:
-        # Get the current directory
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        models_dir = os.path.join(current_dir, 'models')
+    # Debug: Log the current directory and models directory
+    logger.info(f"Current directory: {current_dir}")
+    logger.info(f"Models directory: {models_dir}")
+    
+    # List all files in the current directory
+    logger.info(f"Files in current directory: {os.listdir(current_dir)}")
+    
+    # Check if models directory exists
+    if os.path.exists(models_dir):
+        logger.info(f"Models directory exists: {models_dir}")
+        logger.info(f"Files in models directory: {os.listdir(models_dir)}")
+    else:
+        logger.error(f"Models directory does not exist: {models_dir}")
+    
+    # Load model files with better error handling
+    model_path = os.path.join(models_dir, 'model.pkl')
+    scaler_path = os.path.join(models_dir, 'scaler.pkl')
+    encoders_path = os.path.join(models_dir, 'label_encoders.pkl')
+    features_path = os.path.join(models_dir, 'feature_names.pkl')
+    
+    # Check if files exist
+    if os.path.exists(model_path):
+        logger.info(f"Model file found at: {model_path}")
+        model = pickle.load(open(model_path, 'rb'))
+        logger.info("Model loaded successfully")
+    else:
+        logger.error(f"Model file not found at: {model_path}")
+    
+    if os.path.exists(scaler_path):
+        logger.info(f"Scaler file found at: {scaler_path}")
+        scaler = pickle.load(open(scaler_path, 'rb'))
+        logger.info("Scaler loaded successfully")
+    else:
+        logger.error(f"Scaler file not found at: {scaler_path}")
+    
+    if os.path.exists(encoders_path):
+        logger.info(f"Label encoders file found at: {encoders_path}")
+        label_encoders = pickle.load(open(encoders_path, 'rb'))
+        logger.info("Label encoders loaded successfully")
+    else:
+        logger.error(f"Label encoders file not found at: {encoders_path}")
+    
+    if os.path.exists(features_path):
+        logger.info(f"Feature names file found at: {features_path}")
+        feature_names = pickle.load(open(features_path, 'rb'))
+        logger.info("Feature names loaded successfully")
+    else:
+        logger.error(f"Feature names file not found at: {features_path}")
+    
+    # Check if all components are loaded
+    if model is not None and scaler is not None and label_encoders is not None:
+        logger.info("All model components loaded successfully")
+    else:
+        logger.error("Some model components failed to load")
         
-        # Debug: Log the current directory and models directory
-        logger.info(f"Current directory: {current_dir}")
-        logger.info(f"Models directory: {models_dir}")
-        
-        # List all files in the current directory
-        logger.info(f"Files in current directory: {os.listdir(current_dir)}")
-        
-        # Check if models directory exists
-        if os.path.exists(models_dir):
-            logger.info(f"Models directory exists: {models_dir}")
-            logger.info(f"Files in models directory: {os.listdir(models_dir)}")
-        else:
-            logger.error(f"Models directory does not exist: {models_dir}")
-            return False
-        
-        # Load model files with better error handling
-        model_path = os.path.join(models_dir, 'model.pkl')
-        scaler_path = os.path.join(models_dir, 'scaler.pkl')
-        encoders_path = os.path.join(models_dir, 'label_encoders.pkl')
-        features_path = os.path.join(models_dir, 'feature_names.pkl')
-        
-        # Check if files exist and load them
-        if os.path.exists(model_path):
-            logger.info(f"Model file found at: {model_path}")
-            with open(model_path, 'rb') as f:
-                model = pickle.load(f)
-            logger.info("Model loaded successfully")
-        else:
-            logger.error(f"Model file not found at: {model_path}")
-            return False
-        
-        if os.path.exists(scaler_path):
-            logger.info(f"Scaler file found at: {scaler_path}")
-            with open(scaler_path, 'rb') as f:
-                scaler = pickle.load(f)
-            logger.info("Scaler loaded successfully")
-        else:
-            logger.error(f"Scaler file not found at: {scaler_path}")
-            return False
-        
-        if os.path.exists(encoders_path):
-            logger.info(f"Label encoders file found at: {encoders_path}")
-            with open(encoders_path, 'rb') as f:
-                label_encoders = pickle.load(f)
-            logger.info("Label encoders loaded successfully")
-        else:
-            logger.error(f"Label encoders file not found at: {encoders_path}")
-            return False
-        
-        if os.path.exists(features_path):
-            logger.info(f"Feature names file found at: {features_path}")
-            with open(features_path, 'rb') as f:
-                feature_names = pickle.load(f)
-            logger.info("Feature names loaded successfully")
-        else:
-            logger.error(f"Feature names file not found at: {features_path}")
-            return False
-        
-        # Check if all components are loaded
-        if model is not None and scaler is not None and label_encoders is not None:
-            logger.info("All model components loaded successfully")
-            return True
-        else:
-            logger.error("Some model components failed to load")
-            return False
-            
-    except Exception as e:
-        logger.error(f"Error loading model: {e}")
-        import traceback
-        logger.error(f"Traceback: {traceback.format_exc()}")
-        model = None
-        scaler = None
-        label_encoders = None
-        feature_names = None
-        return False
-
-# Load models on startup
-models_loaded = load_models()
+except Exception as e:
+    logger.error(f"Error loading model: {e}")
+    import traceback
+    logger.error(f"Traceback: {traceback.format_exc()}")
+    model = None
+    scaler = None
+    label_encoders = None
+    feature_names = None
 
 def validate_input_data(data):
     """Validate input data for diabetes prediction"""
@@ -374,10 +355,10 @@ def predict():
             flash("Please select your gender", "error")
             return render_template('index.html', error="Please select your gender")
         
-        # Check if models are loaded
-        if not models_loaded or label_encoders is None:
-            flash("Error: Model components not available", "error")
-            return render_template('index.html', error="Model components not available. Please try again later.")
+        # Check if label_encoders are available
+        if label_encoders is None:
+            flash("Error: Model encoders not available", "error")
+            return render_template('index.html', error="Model encoders not available. Please try again later.")
         
         # Encode categorical variables
         gender_encoded = label_encoders['gender'].transform([gender])[0] if gender in label_encoders['gender'].classes_ else 0
@@ -466,9 +447,9 @@ def api_predict():
         heart_disease = int(data.get('HeartDisease', 0))
         smoking_history = data.get('SmokingHistory', '')
         
-        # Check if models are loaded
-        if not models_loaded or label_encoders is None:
-            return jsonify({"error": "Model components not available"}), 500
+        # Check if label_encoders are available
+        if label_encoders is None:
+            return jsonify({"error": "Model encoders not available"}), 500
         
         # Encode categorical variables
         gender_encoded = label_encoders['gender'].transform([gender])[0] if gender in label_encoders['gender'].classes_ else 0
