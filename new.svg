@@ -1,0 +1,50 @@
+<svg viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg">
+  <!-- System boundary -->
+  <rect x="300" y="50" width="450" height="350" fill="none" stroke="#666" stroke-width="2" stroke-dasharray="5,5" rx="10"/>
+  
+  <!-- Actor - System Administrator -->
+  <g id="system-admin-actor">
+    <!-- Head -->
+    <circle cx="120" cy="150" r="25" fill="none" stroke="#000" stroke-width="2"/>
+    <!-- Body -->
+    <line x1="120" y1="175" x2="120" y2="250" stroke="#000" stroke-width="2"/>
+    <!-- Arms -->
+    <line x1="80" y1="200" x2="160" y2="200" stroke="#000" stroke-width="2"/>
+    <!-- Legs -->
+    <line x1="120" y1="250" x2="90" y2="300" stroke="#000" stroke-width="2"/>
+    <line x1="120" y1="250" x2="150" y2="300" stroke="#000" stroke-width="2"/>
+  </g>
+  
+  <!-- Actor label -->
+  <text x="120" y="330" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#000">SYSTEM ADMINISTRATOR</text>
+  
+  <!-- Use Cases -->
+  <g id="use-cases">
+    <!-- System Maintenance -->
+    <ellipse cx="520" cy="130" rx="115" ry="30" fill="#fff2e6" stroke="#d35400" stroke-width="2"/>
+    <text x="520" y="136" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#000">SYSTEM MAINTENANCE</text>
+    
+    <!-- Monitor Performance -->
+    <ellipse cx="520" cy="210" rx="120" ry="30" fill="#fff2e6" stroke="#d35400" stroke-width="2"/>
+    <text x="520" y="216" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#000">MONITOR PERFORMANCE</text>
+    
+    <!-- Backup Data -->
+    <ellipse cx="520" cy="290" rx="85" ry="30" fill="#fff2e6" stroke="#d35400" stroke-width="2"/>
+    <text x="520" y="296" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#000">BACKUP DATA</text>
+  </g>
+  
+  <!-- Association lines from System Administrator to Use Cases -->
+  <g id="associations">
+    <!-- To System Maintenance -->
+    <line x1="160" y1="170" x2="405" y2="130" stroke="#000" stroke-width="1.5"/>
+    <polygon points="405,130 395,125 395,135" fill="#000"/>
+    
+    <!-- To Monitor Performance -->
+    <line x1="160" y1="200" x2="400" y2="210" stroke="#000" stroke-width="1.5"/>
+    <polygon points="400,210 390,205 390,215" fill="#000"/>
+    
+    <!-- To Backup Data -->
+    <line x1="160" y1="230" x2="435" y2="290" stroke="#000" stroke-width="1.5"/>
+    <polygon points="435,290 425,285 425,295" fill="#000"/>
+  </g>
+</svg>
