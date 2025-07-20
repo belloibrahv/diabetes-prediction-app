@@ -11,7 +11,6 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 import io
 import csv
-import numpy as np
 
 # Load environment variables from .env file
 load_dotenv()
