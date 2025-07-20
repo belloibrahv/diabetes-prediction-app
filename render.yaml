@@ -3,12 +3,8 @@ services:
     name: diabetes-prediction-app
     env: python
     plan: free
-    buildCommand: |
-      pip install -r requirements.txt
-      python check_models.py
-    startCommand: gunicorn app:app
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT
     envVars:
-      - key: PYTHON_VERSION
-        value: 3.13.4
       - key: PYTHONPATH
         value: . 

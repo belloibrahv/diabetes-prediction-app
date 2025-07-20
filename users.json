@@ -1,0 +1,16 @@
+{
+    "testuser": {
+        "user_id": "1",
+        "password_hash": "scrypt:32768:8:1$ORwFgbH2ujr5B5PD$1ef827cdbda5474b3115a4a6d9da1617578a29c949377c5f1b26c0b92eb8eb006c2c429b6b1277e4c4503001f1a5678fcd729c91bcaa7f2e892a5babeef95f79",
+        "email": "test@example.com",
+        "created_at": "2025-07-20T06:29:34.158630",
+        "predictions": []
+    },
+    "john doe": {
+        "user_id": "2",
+        "password_hash": "scrypt:32768:8:1$SWsefXuzBv9GVQ3m$89b9ebdd13b0b2099f6b8680ae4c383353f81a60e35e6a11dc97692c790ba367917fa0e11c241e9b404225e2ad8e7c37229988db1377ab014ed09c69355127cb",
+        "email": "johndoe@example.com",
+        "created_at": "2025-07-20T06:31:48.176685",
+        "predictions": []
+    }
+}

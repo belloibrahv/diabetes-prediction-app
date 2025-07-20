@@ -1,0 +1,168 @@
+<svg width="1200" height="800" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Define patterns and gradients -->
+    <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+      <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#f0f0f0" stroke-width="1"/>
+    </pattern>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="800" fill="white"/>
+  
+  <!-- Title -->
+  <text x="600" y="30" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="black">System Architecture Diagram</text>
+  
+  <!-- User Actor (UML Stick Figure) -->
+  <g id="user-actor" transform="translate(100, 100)">
+    <!-- Head -->
+    <circle cx="0" cy="0" r="15" fill="white" stroke="black" stroke-width="3"/>
+    <!-- Body -->
+    <line x1="0" y1="15" x2="0" y2="60" stroke="black" stroke-width="3"/>
+    <!-- Arms -->
+    <line x1="-25" y1="35" x2="25" y2="35" stroke="black" stroke-width="3"/>
+    <!-- Legs -->
+    <line x1="0" y1="60" x2="-20" y2="90" stroke="black" stroke-width="3"/>
+    <line x1="0" y1="60" x2="20" y2="90" stroke="black" stroke-width="3"/>
+    <!-- Label -->
+    <text x="0" y="110" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="black">User</text>
+  </g>
+  
+  <!-- Presentation Tier -->
+  <g id="presentation-tier">
+    <rect x="250" y="80" width="300" height="200" fill="white" stroke="black" stroke-width="3" rx="10"/>
+    <text x="400" y="100" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="black">Presentation Tier (Frontend)</text>
+    
+    <!-- HTML5 -->
+    <rect x="270" y="120" width="80" height="40" fill="white" stroke="black" stroke-width="2" rx="5"/>
+    <text x="310" y="145" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="black">HTML5</text>
+    
+    <!-- CSS3 + Bootstrap -->
+    <rect x="360" y="120" width="100" height="40" fill="white" stroke="black" stroke-width="2" rx="5"/>
+    <text x="410" y="138" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="black">CSS3 +</text>
+    <text x="410" y="152" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="black">Bootstrap</text>
+    
+    <!-- JavaScript ES6+ -->
+    <rect x="470" y="120" width="70" height="40" fill="white" stroke="black" stroke-width="2" rx="5"/>
+    <text x="505" y="138" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="black">JavaScript</text>
+    <text x="505" y="152" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="black">ES6+</text>
+    
+    <!-- User Interface -->
+    <rect x="270" y="180" width="120" height="40" fill="white" stroke="black" stroke-width="2" rx="5"/>
+    <text x="330" y="205" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="black">User Interface</text>
+    
+    <!-- Client-side Validation -->
+    <rect x="400" y="180" width="140" height="40" fill="white" stroke="black" stroke-width="2" rx="5"/>
+    <text x="470" y="198" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="black">Client-side</text>
+    <text x="470" y="212" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="black">Validation</text>
+  </g>
+  
+  <!-- Logic Tier -->
+  <g id="logic-tier">
+    <rect x="600" y="80" width="400" height="300" fill="white" stroke="black" stroke-width="3" rx="10"/>
+    <text x="800" y="100" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="black">Logic Tier (Backend)</text>
+    
+    <!-- Flask -->
+    <rect x="620" y="120" width="80" height="40" fill="white" stroke="black" stroke-width="2" rx="5"/>
+    <text x="660" y="138" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="black">Flask Web</text>
+    <text x="660" y="152" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="black">Framework</text>
+    
+    <!-- RESTful API -->
+    <rect x="710" y="120" width="80" height="40" fill="white" stroke="black" stroke-width="2" rx="5"/>
+    <text x="750" y="138" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="black">RESTful</text>
+    <text x="750" y="152" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="black">API</text>
+    
+    <!-- Rule-Based Prediction Engine -->
+    <rect x="800" y="120" width="120" height="40" fill="white" stroke="black" stroke-width="2" rx="5"/>
+    <text x="860" y="138" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="black">Rule-Based</text>
+    <text x="860" y="152" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="black">Prediction Engine</text>
+    
+    <!-- Data Validation -->
+    <rect x="620" y="180" width="100" height="40" fill="white" stroke="black" stroke-width="2" rx="5"/>
+    <text x="670" y="198" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="black">Data</text>
+    <text x="670" y="212" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="black">Validation</text>
+    
+    <!-- Response Formatting -->
+    <rect x="730" y="180" width="120" height="40" fill="white" stroke="black" stroke-width="2" rx="5"/>
+    <text x="790" y="198" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="black">Response</text>
+    <text x="790" y="212" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="black">Formatting</text>
+    
+    <!-- System Integration -->
+    <rect x="620" y="240" width="300" height="120" fill="white" stroke="black" stroke-width="2" rx="5"/>
+    <text x="770" y="260" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="black">System Integration</text>
+    
+    <!-- API Gateway -->
+    <rect x="640" y="280" width="80" height="35" fill="white" stroke="black" stroke-width="2" rx="5"/>
+    <text x="680" y="298" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="black">API</text>
+    <text x="680" y="310" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="black">Gateway</text>
+    
+    <!-- Security Layer -->
+    <rect x="730" y="280" width="80" height="35" fill="white" stroke="black" stroke-width="2" rx="5"/>
+    <text x="770" y="298" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="black">Security</text>
+    <text x="770" y="310" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="black">Layer</text>
+    
+    <!-- Monitoring Layer -->
+    <rect x="820" y="280" width="80" height="35" fill="white" stroke="black" stroke-width="2" rx="5"/>
+    <text x="860" y="298" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="black">Monitoring</text>
+    <text x="860" y="310" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="black">Layer</text>
+  </g>
+  
+  <!-- Data Tier -->
+  <g id="data-tier">
+    <rect x="250" y="400" width="500" height="150" fill="white" stroke="black" stroke-width="3" rx="10"/>
+    <text x="500" y="420" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="black">Data Tier</text>
+    
+    <!-- Rules/Thresholds Configuration -->
+    <rect x="270" y="440" width="140" height="40" fill="white" stroke="black" stroke-width="2" rx="5"/>
+    <text x="340" y="458" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="black">Rules/Thresholds</text>
+    <text x="340" y="472" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="black">Configuration</text>
+    
+    <!-- Static Content/Resources -->
+    <rect x="420" y="440" width="140" height="40" fill="white" stroke="black" stroke-width="2" rx="5"/>
+    <text x="490" y="458" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="black">Static Content/</text>
+    <text x="490" y="472" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="black">Resources</text>
+    
+    <!-- Future Database -->
+    <rect x="570" y="440" width="120" height="40" fill="white" stroke="black" stroke-width="2" rx="5"/>
+    <text x="630" y="458" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="black">Future</text>
+    <text x="630" y="472" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="black">Database</text>
+  </g>
+  
+  <!-- Data Flow Arrows -->
+  <!-- User to UI -->
+  <path d="M 150 180 Q 200 180 250 180" fill="none" stroke="black" stroke-width="3" marker-end="url(#arrowhead)"/>
+  
+  <!-- UI to API -->
+  <path d="M 550 180 Q 575 180 600 180" fill="none" stroke="black" stroke-width="3" marker-end="url(#arrowhead)"/>
+  
+  <!-- API to Data -->
+  <path d="M 750 220 Q 750 350 500 400" fill="none" stroke="black" stroke-width="3" marker-end="url(#arrowhead)"/>
+  
+  <!-- Return arrows -->
+  <path d="M 500 420 Q 750 370 750 240" fill="none" stroke="black" stroke-width="3" marker-end="url(#arrowhead)" stroke-dasharray="5,5"/>
+  
+  <!-- Arrow marker definition -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="black"/>
+    </marker>
+  </defs>
+  
+  <!-- Legend -->
+  <g id="legend" transform="translate(50, 600)">
+    <rect x="0" y="0" width="200" height="120" fill="white" stroke="black" stroke-width="2" rx="5"/>
+    <text x="100" y="20" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="black">Legend</text>
+    
+    <line x1="10" y1="40" x2="30" y2="40" stroke="black" stroke-width="3"/>
+    <text x="40" y="45" font-family="Arial, sans-serif" font-size="12" fill="black">Data Flow</text>
+    
+    <line x1="10" y1="60" x2="30" y2="60" stroke="black" stroke-width="3" stroke-dasharray="5,5"/>
+    <text x="40" y="65" font-family="Arial, sans-serif" font-size="12" fill="black">Return Flow</text>
+    
+    <g transform="translate(15, 75)">
+      <circle cx="0" cy="0" r="8" fill="white" stroke="black" stroke-width="2"/>
+      <line x1="0" y1="8" x2="0" y2="25" stroke="black" stroke-width="2"/>
+      <line x1="-10" y1="18" x2="10" y2="18" stroke="black" stroke-width="2"/>
+      <text x="25" y="15" font-family="Arial, sans-serif" font-size="12" fill="black">Actor</text>
+    </g>
+  </g>
+</svg>

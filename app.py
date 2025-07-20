@@ -1,185 +1,108 @@
-# import numpy as np
-# import pandas as pd
-from flask import Flask, request, jsonify, render_template, flash, send_file
-from flask_cors import CORS
-import pickle
+# app.py
+import json
 import os
 from datetime import datetime
 import logging
+from functools import wraps
+
+from flask import Flask, request, jsonify, render_template, flash, session, redirect, url_for
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_cors import CORS
 from dotenv import load_dotenv
 import io
 import csv
 import numpy as np
 
-# Load environment variables
+# Load environment variables from .env file
 load_dotenv()
 
-# Configure logging
+# Configure logging for better error tracking
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
-app.secret_key = os.getenv('SECRET_KEY', 'your-secret-key-here')
+app.secret_key = os.getenv('SECRET_KEY', 'your_super_secret_key_please_change_this_in_production_environment')
 CORS(app)
 
-# Load the trained model, scaler, and encoders
-model = None
-scaler = None
-label_encoders = None
-feature_names = None
+USERS_FILE = 'users.json'
 
-def load_models():
-    """Load all model components with robust error handling"""
-    global model, scaler, label_encoders, feature_names
-    
+def load_users():
+    if not os.path.exists(USERS_FILE):
+        return {}
     try:
-        # Get the current directory
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        models_dir = os.path.join(current_dir, 'models')
-        
-        # Debug: Log the current directory and models directory
-        logger.info(f"Current directory: {current_dir}")
-        logger.info(f"Models directory: {models_dir}")
-        
-        # List all files in the current directory
-        logger.info(f"Files in current directory: {os.listdir(current_dir)}")
-        
-        # Check if models directory exists
-        if os.path.exists(models_dir):
-            logger.info(f"Models directory exists: {models_dir}")
-            logger.info(f"Files in models directory: {os.listdir(models_dir)}")
-        else:
-            logger.error(f"Models directory does not exist: {models_dir}")
-            return False
-        
-        # Load model files with better error handling
-        model_path = os.path.join(models_dir, 'model.pkl')
-        scaler_path = os.path.join(models_dir, 'scaler.pkl')
-        encoders_path = os.path.join(models_dir, 'label_encoders.pkl')
-        features_path = os.path.join(models_dir, 'feature_names.pkl')
-        
-        # Check if files exist and load them
-        if os.path.exists(model_path):
-            logger.info(f"Model file found at: {model_path}")
-            with open(model_path, 'rb') as f:
-                model = pickle.load(f)
-            logger.info("Model loaded successfully")
-        else:
-            logger.error(f"Model file not found at: {model_path}")
-            return False
-        
-        if os.path.exists(scaler_path):
-            logger.info(f"Scaler file found at: {scaler_path}")
-            with open(scaler_path, 'rb') as f:
-                scaler = pickle.load(f)
-            logger.info("Scaler loaded successfully")
-        else:
-            logger.error(f"Scaler file not found at: {scaler_path}")
-            return False
-        
-        if os.path.exists(encoders_path):
-            logger.info(f"Label encoders file found at: {encoders_path}")
-            with open(encoders_path, 'rb') as f:
-                label_encoders = pickle.load(f)
-            logger.info("Label encoders loaded successfully")
-        else:
-            logger.error(f"Label encoders file not found at: {encoders_path}")
-            return False
-        
-        if os.path.exists(features_path):
-            logger.info(f"Feature names file found at: {features_path}")
-            with open(features_path, 'rb') as f:
-                feature_names = pickle.load(f)
-            logger.info("Feature names loaded successfully")
-        else:
-            logger.error(f"Feature names file not found at: {features_path}")
-            return False
-        
-        # Check if all components are loaded
-        if model is not None and scaler is not None and label_encoders is not None:
-            logger.info("All model components loaded successfully")
-            return True
-        else:
-            logger.error("Some model components failed to load")
-            return False
-            
+        with open(USERS_FILE, 'r') as f:
+            return json.load(f)
+    except json.JSONDecodeError:
+        logger.warning(f"Error decoding JSON from {USERS_FILE}. Returning empty users dictionary.")
+        return {}
     except Exception as e:
-        logger.error(f"Error loading model: {e}")
-        import traceback
-        logger.error(f"Traceback: {traceback.format_exc()}")
-        model = None
-        scaler = None
-        label_encoders = None
-        feature_names = None
-        return False
+        logger.error(f"Error loading users from {USERS_FILE}: {e}")
+        return {}
 
-# Load models on startup
-models_loaded = load_models()
-
-def validate_input_data(data):
-    """Validate input data for diabetes prediction"""
+def save_users(users):
     try:
-        age = float(data.get('Age', 0))
-        gender = data.get('Gender', '')
-        bmi = float(data.get('BMI', 0))
-        hba1c = float(data.get('HbA1c', 0))
-        hypertension = int(data.get('Hypertension', 0))
-        heart_disease = int(data.get('HeartDisease', 0))
-        smoking_history = data.get('SmokingHistory', '')
-        physical_activity = data.get('PhysicalActivity', '')
-        dietary_habits = data.get('DietaryHabits', '')
-        family_history = data.get('FamilyHistory', '')
-        existing_conditions = data.get('ExistingConditions', '')
-        
-        # Validate ranges based on medical standards
-        if not (18 <= age <= 120):
-            return False, "Age should be between 18-120 years"
-        if gender not in ['Male', 'Female']:
-            return False, "Gender should be Male or Female"
-        if not (15 <= bmi <= 60):
-            return False, "BMI should be between 15-60 kg/m²"
-        if not (3.5 <= hba1c <= 9.0):
-            return False, "HbA1c should be between 3.5-9.0%"
-        if hypertension not in [0, 1]:
-            return False, "Hypertension should be 0 (No) or 1 (Yes)"
-        if heart_disease not in [0, 1]:
-            return False, "Heart Disease should be 0 (No) or 1 (Yes)"
-        if smoking_history not in ['never', 'current', 'former', 'No Info']:
-            return False, "Invalid smoking history value"
-            
-        return True, [age, gender, bmi, hba1c, hypertension, heart_disease, smoking_history, 
-                     physical_activity, dietary_habits, family_history, existing_conditions]
-    except ValueError:
-        return False, "Invalid input data. Please enter numeric values where required."
+        with open(USERS_FILE, 'w') as f:
+            json.dump(users, f, indent=4)
+    except Exception as e:
+        logger.error(f"Error saving users to {USERS_FILE}: {e}")
 
-def get_risk_level(prediction_probability):
-    """Determine risk level based on prediction probability"""
-    if prediction_probability >= 0.8:
-        return "High Risk", "danger", "Immediate medical attention required"
-    elif prediction_probability >= 0.6:
-        return "Moderate Risk", "warning", "Regular monitoring recommended"
-    elif prediction_probability >= 0.4:
-        return "Low Risk", "info", "Lifestyle modifications advised"
-    else:
-        return "Very Low Risk", "success", "Continue healthy lifestyle"
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session:
+            flash("Please log in to access this page.", "info")
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
 
-def get_diabetes_type(prediction_probability, age, bmi, hba1c):
-    """Classify diabetes type based on parameters"""
-    if prediction_probability < 0.5:
-        return "No Diabetes"
+def rule_based_predict(age, bmi, hba1c):
+    diabetes_type = "No Diabetes"
+    risk_level = "Low Risk"
+    prediction = 0
+    explanation = []
+    rec_category = "Lifestyle, Dietary"
     
-    # Simple classification logic based on typical characteristics
-    if age < 30 and hba1c > 6.5:
-        return "Type 1 Diabetes"
-    elif age > 45 and bmi > 25 and hba1c > 6.5:
-        return "Type 2 Diabetes"
-    elif age > 45 and bmi > 25:
-        return "Type 2 Diabetes"
+    if hba1c > 6.5 and age < 30:
+        diabetes_type = "Type 1 Diabetes"
+        risk_level = "High Risk"
+        prediction = 1
+        rec_category = "Medical, Monitoring"
+        explanation.append("Rule R1: Age < 30 and HbA1c > 6.5% suggests Type 1 Diabetes.")
+    elif hba1c > 6.5 and age >= 30:
+        diabetes_type = "Type 2 Diabetes"
+        risk_level = "High Risk"
+        prediction = 1
+        rec_category = "Medical, Lifestyle, Dietary"
+        explanation.append("Rule R2: Age >= 30 and HbA1c > 6.5% suggests Type 2 Diabetes.")
+    elif 5.7 <= hba1c <= 6.4:
+        diabetes_type = "Prediabetes"
+        risk_level = "Moderate Risk"
+        prediction = 0
+        rec_category = "Lifestyle, Dietary, Medical"
+        explanation.append("Rule R3: HbA1c between 5.7% and 6.4% indicates Prediabetes.")
+    elif hba1c < 5.7 and 25 <= bmi < 30:
+        diabetes_type = "No Diabetes"
+        risk_level = "Moderate Risk"
+        prediction = 0
+        rec_category = "Lifestyle, Dietary"
+        explanation.append("Rule R4: BMI 25-29.9 and HbA1c < 5.7% indicates Moderate Risk (Overweight).")
+    elif hba1c < 5.7 and bmi >= 30:
+        diabetes_type = "No Diabetes"
+        risk_level = "Moderate Risk"
+        prediction = 0
+        rec_category = "Lifestyle, Dietary"
+        explanation.append("Rule R5: BMI >= 30 and HbA1c < 5.7% indicates Moderate Risk (Obese).")
+    elif hba1c < 5.7 and bmi < 25:
+        diabetes_type = "No Diabetes"
+        risk_level = "Low Risk"
+        prediction = 0
+        rec_category = "Lifestyle, Dietary"
+        explanation.append("Rule R6: BMI < 25 and HbA1c < 5.7% indicates Low Risk.")
     else:
-        return "Type 1 Diabetes"
+        explanation.append("Input does not match any specific rule. Defaulting to low risk.")
+    return prediction, risk_level, diabetes_type, rec_category, explanation
 
 def get_treatment_recommendations(prediction, risk_level, diabetes_type, input_data):
-    """Generate personalized treatment recommendations"""
     recommendations = {
         "immediate": [],
         "lifestyle": [],
@@ -188,152 +111,197 @@ def get_treatment_recommendations(prediction, risk_level, diabetes_type, input_d
         "dietary": [],
         "exercise": []
     }
-    
-    if prediction == 1:  # Diabetes detected
+    if prediction == 1:
         recommendations["immediate"].extend([
-            "Schedule an appointment with your healthcare provider immediately",
-            "Begin monitoring blood glucose levels regularly",
-            "Review current medications with your doctor"
+            "Schedule an appointment with your healthcare provider immediately to confirm diagnosis and develop a treatment plan.",
+            "Begin monitoring blood glucose levels regularly as advised by your doctor.",
+            "Review current medications with your doctor to ensure they are appropriate for diabetes management."
         ])
-        
         recommendations["lifestyle"].extend([
-            "Adopt a low-carbohydrate, high-fiber diet",
-            "Engage in at least 150 minutes of moderate exercise weekly",
-            "Maintain a healthy weight through balanced nutrition",
-            "Limit alcohol consumption and quit smoking",
-            "Practice stress management techniques"
+            "Adopt a low-carbohydrate, high-fiber diet focusing on whole foods and portion control.",
+            "Engage in at least 150 minutes of moderate-intensity aerobic exercise weekly (e.g., brisk walking, cycling).",
+            "Maintain a healthy weight through balanced nutrition and regular physical activity.",
+            "Limit alcohol consumption and quit smoking entirely, as both can worsen diabetes complications.",
+            "Practice stress management techniques like meditation, yoga, or deep breathing exercises."
         ])
-        
         recommendations["monitoring"].extend([
-            "Monitor blood glucose levels 2-4 times daily",
-            "Track HbA1c levels every 3-6 months",
-            "Regular foot examinations",
-            "Annual eye examinations",
-            "Regular blood pressure monitoring"
+            "Monitor blood glucose levels 2-4 times daily, or as recommended by your healthcare provider.",
+            "Track HbA1c levels every 3-6 months to assess long-term blood sugar control.",
+            "Perform regular foot examinations to check for cuts, sores, or infections.",
+            "Undergo annual eye examinations to screen for diabetic retinopathy.",
+            "Monitor blood pressure regularly and manage it within target ranges."
         ])
-        
         recommendations["medical"].extend([
-            "Consider medication therapy (Metformin, Insulin, etc.)",
-            "Regular HbA1c testing",
-            "Cardiovascular risk assessment",
-            "Kidney function monitoring"
+            "Discuss medication therapy options (e.g., Metformin, Insulin, SGLT2 inhibitors) with your doctor.",
+            "Ensure regular HbA1c testing is performed as part of your diabetes management plan.",
+            "Undergo cardiovascular risk assessment to manage heart health.",
+            "Monitor kidney function regularly through blood and urine tests."
         ])
-        
-        # Dietary recommendations based on diabetes type
         if "Type 2" in diabetes_type:
             recommendations["dietary"].extend([
-                "Low-carbohydrate diet (45-50% of calories)",
-                "High fiber foods (25-30g daily)",
-                "Lean proteins and healthy fats",
-                "Limit processed foods and added sugars",
-                "Regular meal timing"
+                "Focus on a low-carbohydrate diet (e.g., 45-50% of total daily calories from carbs).",
+                "Incorporate high fiber foods (25-30g daily) such as whole grains, fruits, and vegetables.",
+                "Prioritize lean proteins (chicken, fish, beans) and healthy fats (avocado, nuts, olive oil).",
+                "Strictly limit processed foods, sugary drinks, and added sugars.",
+                "Maintain regular meal timing to help stabilize blood glucose levels."
             ])
         else:
             recommendations["dietary"].extend([
-                "Balanced carbohydrate counting",
-                "Regular insulin timing with meals",
-                "Consistent meal patterns",
-                "Emergency glucose management",
-                "Professional nutrition counseling"
+                "Implement balanced carbohydrate counting to match insulin doses.",
+                "Ensure regular insulin timing in conjunction with meals.",
+                "Maintain consistent meal patterns to avoid blood sugar fluctuations.",
+                "Understand emergency glucose management for hypoglycemia.",
+                "Seek professional nutrition counseling for personalized meal planning."
             ])
-        
-        # Exercise recommendations
         recommendations["exercise"].extend([
-            "Aerobic exercise: 150 minutes/week moderate intensity",
-            "Strength training: 2-3 sessions/week",
-            "Flexibility exercises: 2-3 sessions/week",
-            "Monitor blood glucose before/after exercise",
-            "Stay hydrated during physical activity"
+            "Aim for at least 150 minutes per week of moderate-intensity aerobic exercise.",
+            "Include strength training exercises 2-3 sessions per week for all major muscle groups.",
+            "Incorporate flexibility exercises (stretching, yoga) 2-3 sessions per week.",
+            "Monitor blood glucose before and after exercise, especially if on insulin or certain medications.",
+            "Stay well-hydrated during physical activity."
         ])
-        
-    else:  # No diabetes detected
+    else:
         recommendations["lifestyle"].extend([
-            "Maintain a healthy lifestyle with regular exercise",
-            "Eat a balanced diet rich in whole grains and vegetables",
-            "Monitor your weight and BMI regularly",
-            "Get regular health check-ups",
-            "Avoid smoking and limit alcohol consumption"
+            "Maintain a healthy lifestyle with regular exercise to prevent diabetes.",
+            "Eat a balanced diet rich in whole grains, lean proteins, and plenty of fruits and vegetables.",
+            "Monitor your weight and BMI regularly to stay within a healthy range.",
+            "Get regular health check-ups, especially if you have risk factors for diabetes.",
+            "Avoid smoking and limit alcohol consumption to support overall health."
         ])
-        
         recommendations["monitoring"].extend([
-            "Annual diabetes screening if over 45 years",
-            "Regular BMI monitoring",
-            "Blood pressure checks",
-            "Cholesterol level monitoring"
+            "Consider annual diabetes screening if you are over 45 years old or have other risk factors.",
+            "Regularly monitor your BMI and weight.",
+            "Have your blood pressure checked regularly.",
+            "Monitor your cholesterol levels as part of routine health checks."
         ])
-        
         recommendations["dietary"].extend([
-            "Balanced diet with whole grains",
-            "Plenty of fruits and vegetables",
-            "Lean proteins and healthy fats",
-            "Limit processed foods",
-            "Stay hydrated"
+            "Follow a balanced diet with an emphasis on whole grains over refined grains.",
+            "Consume plenty of fruits and vegetables daily.",
+            "Include lean proteins and healthy fats in your meals.",
+            "Limit processed foods, sugary drinks, and excessive saturated/trans fats.",
+            "Stay well-hydrated by drinking adequate water throughout the day."
         ])
-        
         recommendations["exercise"].extend([
-            "150 minutes moderate exercise weekly",
-            "Strength training 2-3 times weekly",
-            "Flexibility exercises",
-            "Find activities you enjoy",
-            "Gradual progression in intensity"
+            "Aim for at least 150 minutes of moderate-intensity exercise weekly.",
+            "Incorporate strength training 2-3 times weekly.",
+            "Include flexibility exercises in your routine.",
+            "Find physical activities you enjoy to make exercise sustainable.",
+            "Progress gradually in intensity and duration to avoid injury."
         ])
-    
     return recommendations
 
 def get_educational_content(diabetes_type, risk_level):
-    """Generate educational content based on diabetes type and risk level"""
     content = {
         "general": [
-            "Diabetes is a chronic condition affecting how your body processes glucose",
-            "Early detection and management can prevent complications",
-            "Lifestyle changes are crucial for diabetes management",
-            "Regular monitoring helps track progress and prevent complications"
+            "Diabetes is a chronic condition affecting how your body processes glucose (sugar).",
+            "Early detection and proper management can prevent or delay serious complications.",
+            "Lifestyle changes, including diet and exercise, are crucial for diabetes management and prevention.",
+            "Regular monitoring of blood sugar levels helps track progress and prevent complications."
         ],
         "prevention": [
-            "Maintain a healthy weight through diet and exercise",
-            "Eat a balanced diet low in processed foods",
-            "Get regular physical activity",
-            "Monitor blood pressure and cholesterol levels",
-            "Avoid smoking and limit alcohol consumption"
+            "Maintain a healthy weight through a balanced diet and regular exercise.",
+            "Eat a balanced diet low in processed foods, sugary drinks, and unhealthy fats.",
+            "Get at least 150 minutes of moderate physical activity each week.",
+            "Monitor blood pressure and cholesterol levels regularly.",
+            "Avoid smoking and limit alcohol consumption."
         ],
         "management": [
-            "Work closely with healthcare providers",
-            "Monitor blood glucose levels regularly",
-            "Take medications as prescribed",
-            "Maintain a healthy lifestyle",
-            "Attend regular check-ups"
-        ]
+            "Work closely with your healthcare providers to develop a personalized care plan.",
+            "Monitor blood glucose levels regularly as advised by your doctor.",
+            "Take medications as prescribed and understand their purpose.",
+            "Maintain a healthy lifestyle, including diet and exercise, as a cornerstone of management.",
+            "Attend regular check-ups and screenings for diabetes complications."
+        ],
+        "specific": []
     }
-    
     if "Type 1" in diabetes_type:
-        content["specific"] = [
-            "Type 1 diabetes is an autoimmune condition",
-            "Insulin therapy is essential for survival",
-            "Regular blood glucose monitoring is crucial",
-            "Carbohydrate counting helps with insulin dosing",
-            "Emergency preparedness is important"
-        ]
+        content["specific"].extend([
+            "Type 1 diabetes is an autoimmune condition where the body does not produce insulin.",
+            "Insulin therapy is essential for survival and must be administered daily.",
+            "Regular blood glucose monitoring is crucial for adjusting insulin doses.",
+            "Carbohydrate counting helps match insulin doses to food intake.",
+            "Emergency preparedness for hypoglycemia (low blood sugar) is important."
+        ])
     elif "Type 2" in diabetes_type:
-        content["specific"] = [
-            "Type 2 diabetes is often related to lifestyle factors",
-            "Diet and exercise can help manage blood glucose",
-            "Oral medications may be prescribed",
-            "Weight management is important",
-            "Regular screening for complications is essential"
-        ]
-    
+        content["specific"].extend([
+            "Type 2 diabetes is often related to insulin resistance and insufficient insulin production, frequently linked to lifestyle factors.",
+            "Diet and exercise are powerful tools to help manage blood glucose levels.",
+            "Oral medications or injectable non-insulin medications may be prescribed.",
+            "Weight management is a key component in managing Type 2 diabetes.",
+            "Regular screening for complications (eyes, kidneys, nerves, heart) is essential."
+        ])
+
+    elif "Prediabetes" in diabetes_type:
+        content["specific"].extend([
+            "Prediabetes means your blood sugar is higher than normal but not yet diabetes.",
+            "This is a critical time for intervention; lifestyle changes can prevent Type 2 diabetes.",
+            "Focus on increasing physical activity and making healthier food choices.",
+            "Losing even a small amount of weight can make a big difference.",
+            "Regular check-ups are important to monitor your blood sugar levels."
+        ])
     return content
 
 @app.route('/')
+@login_required
 def home():
-    """Landing page with project information"""
-    return render_template('index.html')
+    username = session.get('username')
+    return render_template('index.html', username=username)
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        email = request.form.get('email')
+        users = load_users()
+        if not username or not password or not email:
+            flash("All fields are required.", "error")
+            return render_template('register.html', username=username, email=email)
+        if username in users:
+            flash("Username already exists. Please choose a different one.", "warning")
+            return render_template('register.html', username=username, email=email)
+        hashed_password = generate_password_hash(password)
+        user_id = str(len(users) + 1)
+        users[username] = {
+            'user_id': user_id,
+            'password_hash': hashed_password,
+            'email': email,
+            'created_at': datetime.now().isoformat(),
+            'predictions': []
+        }
+        save_users(users)
+        flash("Registration successful! Please log in.", "success")
+        return redirect(url_for('login'))
+    return render_template('register.html')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        users = load_users()
+        user_data = users.get(username)
+        if user_data and check_password_hash(user_data['password_hash'], password):
+            session['user_id'] = user_data['user_id']
+            session['username'] = username
+            flash(f"Welcome back, {username}!", "success")
+            return redirect(url_for('home'))
+        else:
+            flash("Invalid username or password.", "error")
+            return render_template('login.html', username=username)
+    return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    session.pop('user_id', None)
+    session.pop('username', None)
+    flash("You have been logged out.", "info")
+    return redirect(url_for('login'))
 
 @app.route('/predict', methods=['POST'])
+@login_required
 def predict():
-    """Handle diabetes prediction requests"""
     try:
-        # Get form data with proper handling of empty values
         def safe_float(value, default=0.0):
             if value == '' or value is None:
                 return default
@@ -341,231 +309,95 @@ def predict():
                 return float(value)
             except (ValueError, TypeError):
                 return default
-        
-        def safe_int(value, default=0):
-            if value == '' or value is None:
-                return default
-            try:
-                return int(value)
-            except (ValueError, TypeError):
-                return default
-        
         age = safe_float(request.form.get('Age', 0))
-        gender = request.form.get('Gender', '')
-        weight = safe_float(request.form.get('Weight', 0))
-        height = safe_float(request.form.get('Height', 0))
         bmi = safe_float(request.form.get('BMI', 0))
         hba1c = safe_float(request.form.get('HbA1c', 0))
-        blood_glucose = safe_float(request.form.get('BloodGlucose', 0))
-        hypertension = safe_int(request.form.get('Hypertension', 0))
-        heart_disease = safe_int(request.form.get('HeartDisease', 0))
-        smoking_history = request.form.get('SmokingHistory', '')
-        physical_activity = request.form.get('PhysicalActivity', '')
-        dietary_habits = request.form.get('DietaryHabits', '')
-        family_history = request.form.get('FamilyHistory', '')
-        existing_conditions = request.form.get('ExistingConditions', '')
         
-        # Validate required fields
         if age <= 0 or bmi <= 0 or hba1c <= 0:
-            flash("Please fill in all required fields (Age, BMI, HbA1c)", "error")
-            return render_template('index.html', error="Please fill in all required fields")
+            flash("Please fill in all required fields (Age, BMI, HbA1c) with valid numbers.", "error")
+            input_data = {'Age': age, 'BMI': bmi, 'HbA1c': hba1c}
+            return render_template('index.html', input_data=input_data, username=session.get('username'))
         
-        if not gender:
-            flash("Please select your gender", "error")
-            return render_template('index.html', error="Please select your gender")
+        prediction, risk_level, diabetes_type, rec_category, explanation = rule_based_predict(age, bmi, hba1c)
         
-        # Check if models are loaded
-        if not models_loaded or label_encoders is None:
-            flash("Error: Model components not available", "error")
-            return render_template('index.html', error="Model components not available. Please try again later.")
-        
-        # Encode categorical variables
-        gender_encoded = label_encoders['gender'].transform([gender])[0] if gender in label_encoders['gender'].classes_ else 0
-        smoking_encoded = label_encoders['smoking_history'].transform([smoking_history])[0] if smoking_history in label_encoders['smoking_history'].classes_ else 0
-        
-        # Prepare features for prediction
-        features = np.array([age, gender_encoded, bmi, hba1c, hypertension, heart_disease, smoking_encoded]).reshape(1, -1)
-        
-        # Scale the features
-        if scaler is not None:
-            features_scaled = scaler.transform(features)
+        if prediction == 1:
+            prediction_text = f"Diabetes detected. Type: {diabetes_type}. Risk Level: {risk_level}."
+            result_type = "danger"
         else:
-            flash("Error: Model scaler not available", "error")
-            return render_template('index.html', error="Model scaler not available")
+            prediction_text = f"No diabetes detected. Risk Level: {risk_level}."
+            result_type = "success"
         
-        # Make prediction
-        if model is not None:
-            prediction = model.predict(features_scaled)[0]
-            prediction_probability = model.predict_proba(features_scaled)[0][1] if hasattr(model, 'predict_proba') else 0.5
-            
-            # Determine risk level and diabetes type
-            risk_level, risk_color, risk_description = get_risk_level(prediction_probability)
-            diabetes_type = get_diabetes_type(prediction_probability, age, bmi, hba1c)
-            
-            # Generate result message
-            if prediction == 1:
-                prediction_text = f"Diabetes detected. Type: {diabetes_type}. Risk Level: {risk_level}. {risk_description}"
-                result_type = "danger"
-            else:
-                prediction_text = f"No diabetes detected. Risk Level: {risk_level}. {risk_description}"
-                result_type = "success"
-            
-            # Get treatment recommendations and educational content
-            input_data = {
-                'Age': age, 'Gender': gender, 'Weight': weight, 'Height': height,
-                'BMI': bmi, 'HbA1c': hba1c, 'BloodGlucose': blood_glucose,
-                'Hypertension': hypertension, 'HeartDisease': heart_disease,
-                'SmokingHistory': smoking_history, 'PhysicalActivity': physical_activity,
-                'DietaryHabits': dietary_habits, 'FamilyHistory': family_history,
-                'ExistingConditions': existing_conditions
-            }
-            
-            recommendations = get_treatment_recommendations(prediction, risk_level, diabetes_type, input_data)
-            educational_content = get_educational_content(diabetes_type, risk_level)
-            
-            # Log the prediction
-            logger.info(f"Prediction made - Features: {features[0]}, Prediction: {prediction}, Probability: {prediction_probability:.3f}")
-            
-            return render_template('index.html', 
-                                prediction_text=prediction_text,
-                                result_type=result_type,
-                                risk_level=risk_level,
-                                risk_color=risk_color,
-                                prediction_probability=f"{prediction_probability:.1%}",
-                                diabetes_type=diabetes_type,
-                                recommendations=recommendations,
-                                educational_content=educational_content,
-                                input_data=input_data)
-        else:
-            flash("Error: Model not available", "error")
-            return render_template('index.html', error="Model not available")
-            
+        input_data = {'Age': age, 'BMI': bmi, 'HbA1c': hba1c}
+        recommendations = get_treatment_recommendations(prediction, risk_level, diabetes_type, input_data)
+        educational_content = get_educational_content(diabetes_type, risk_level)
+        
+        return render_template('index.html',
+            prediction_text=prediction_text,
+            result_type=result_type,
+            risk_level=risk_level,
+            diabetes_type=diabetes_type,
+            recommendations=recommendations,
+            educational_content=educational_content,
+            input_data=input_data,
+            explanation=explanation,
+            username=session.get('username')
+        )
     except Exception as e:
         logger.error(f"Error during prediction: {e}")
-        flash(f"An error occurred during prediction: {str(e)}", "error")
-        return render_template('index.html', error=f"An error occurred: {str(e)}")
+        flash(f"An unexpected error occurred during prediction: {str(e)}", "error")
+        input_data = {'Age': request.form.get('Age', ''), 'BMI': request.form.get('BMI', ''), 'HbA1c': request.form.get('HbA1c', '')}
+        return render_template('index.html', error=f"An error occurred: {str(e)}", input_data=input_data, username=session.get('username'))
 
 @app.route('/api/predict', methods=['POST'])
 def api_predict():
-    """API endpoint for diabetes prediction"""
     try:
         data = request.get_json()
-        
         if not data:
             return jsonify({"error": "No data provided"}), 400
-        
-        # Get data
         age = float(data.get('Age', 0))
-        gender = data.get('Gender', '')
-        weight = float(data.get('Weight', 0))
-        height = float(data.get('Height', 0))
         bmi = float(data.get('BMI', 0))
         hba1c = float(data.get('HbA1c', 0))
-        blood_glucose = float(data.get('BloodGlucose', 0))
-        hypertension = int(data.get('Hypertension', 0))
-        heart_disease = int(data.get('HeartDisease', 0))
-        smoking_history = data.get('SmokingHistory', '')
         
-        # Check if models are loaded
-        if not models_loaded or label_encoders is None:
-            return jsonify({"error": "Model components not available"}), 500
+        prediction, risk_level, diabetes_type, rec_category, explanation = rule_based_predict(age, bmi, hba1c)
+        input_data = {'Age': age, 'BMI': bmi, 'HbA1c': hba1c}
+        recommendations = get_treatment_recommendations(prediction, risk_level, diabetes_type, input_data)
         
-        # Encode categorical variables
-        gender_encoded = label_encoders['gender'].transform([gender])[0] if gender in label_encoders['gender'].classes_ else 0
-        smoking_encoded = label_encoders['smoking_history'].transform([smoking_history])[0] if smoking_history in label_encoders['smoking_history'].classes_ else 0
-        
-        # Prepare features for prediction
-        features = np.array([age, gender_encoded, bmi, hba1c, hypertension, heart_disease, smoking_encoded]).reshape(1, -1)
-        
-        # Scale the features
-        if scaler is not None:
-            features_scaled = scaler.transform(features)
-        else:
-            return jsonify({"error": "Model scaler not available"}), 500
-        
-        # Make prediction
-        if model is not None:
-            prediction = model.predict(features_scaled)[0]
-            prediction_probability = model.predict_proba(features_scaled)[0][1] if hasattr(model, 'predict_proba') else 0.5
-            
-            # Determine risk level and diabetes type
-            risk_level, risk_color, risk_description = get_risk_level(prediction_probability)
-            diabetes_type = get_diabetes_type(prediction_probability, age, bmi, hba1c)
-            
-            # Get treatment recommendations
-            input_data = {
-                'Age': age, 'Gender': gender, 'Weight': weight, 'Height': height,
-                'BMI': bmi, 'HbA1c': hba1c, 'BloodGlucose': blood_glucose,
-                'Hypertension': hypertension, 'HeartDisease': heart_disease,
-                'SmokingHistory': smoking_history
-            }
-            
-            recommendations = get_treatment_recommendations(prediction, risk_level, diabetes_type, input_data)
-            
-            response = {
-                "prediction": int(prediction),
-                "prediction_probability": float(prediction_probability),
-                "risk_level": risk_level,
-                "risk_color": risk_color,
-                "risk_description": risk_description,
-                "diabetes_type": diabetes_type,
-                "recommendations": recommendations,
-                "timestamp": datetime.now().isoformat()
-            }
-            
-            return jsonify(response)
-        else:
-            return jsonify({"error": "Model not available"}), 500
-            
+        response = {
+            "prediction": int(prediction),
+            "risk_level": risk_level,
+            "diabetes_type": diabetes_type,
+            "recommendations": recommendations,
+            "explanation": explanation,
+            "timestamp": datetime.now().isoformat()
+        }
+        return jsonify(response)
     except Exception as e:
         logger.error(f"API Error: {e}")
         return jsonify({"error": str(e)}), 500
 
 @app.route('/export-report', methods=['POST'])
+@login_required
 def export_report():
-    """Export prediction report as CSV"""
     try:
         data = request.get_json()
-        
         if not data:
-            return jsonify({"error": "No data provided"}), 400
-        
-        # Create CSV content
+            return jsonify({"error": "No data provided for export"}), 400
         output = io.StringIO()
         writer = csv.writer(output)
-        
-        # Write header
         writer.writerow(['Diabetes Prediction Report'])
         writer.writerow(['Generated on', datetime.now().strftime('%Y-%m-%d %H:%M:%S')])
+        writer.writerow(['Generated for User', session.get('username', 'Anonymous')])
         writer.writerow([])
-        
-        # Write patient information
         writer.writerow(['Patient Information'])
         writer.writerow(['Age', data.get('Age', 'N/A')])
-        writer.writerow(['Gender', data.get('Gender', 'N/A')])
-        writer.writerow(['Weight (kg)', data.get('Weight', 'N/A')])
-        writer.writerow(['Height (cm)', data.get('Height', 'N/A')])
         writer.writerow(['BMI', data.get('BMI', 'N/A')])
         writer.writerow(['HbA1c (%)', data.get('HbA1c', 'N/A')])
-        writer.writerow(['Blood Glucose (mg/dL)', data.get('BloodGlucose', 'N/A')])
-        writer.writerow(['Hypertension', 'Yes' if data.get('Hypertension', 0) else 'No'])
-        writer.writerow(['Heart Disease', 'Yes' if data.get('HeartDisease', 0) else 'No'])
-        writer.writerow(['Smoking History', data.get('SmokingHistory', 'N/A')])
-        writer.writerow(['Physical Activity', data.get('PhysicalActivity', 'N/A')])
-        writer.writerow(['Dietary Habits', data.get('DietaryHabits', 'N/A')])
-        writer.writerow(['Family History', data.get('FamilyHistory', 'N/A')])
-        writer.writerow(['Existing Conditions', data.get('ExistingConditions', 'N/A')])
         writer.writerow([])
-        
-        # Write prediction results
         writer.writerow(['Prediction Results'])
         writer.writerow(['Prediction', 'Diabetes' if data.get('prediction', 0) else 'No Diabetes'])
-        writer.writerow(['Probability', f"{data.get('prediction_probability', 0):.1%}"])
         writer.writerow(['Risk Level', data.get('risk_level', 'N/A')])
         writer.writerow(['Diabetes Type', data.get('diabetes_type', 'N/A')])
         writer.writerow([])
-        
-        # Write recommendations
         recommendations = data.get('recommendations', {})
         writer.writerow(['Recommendations'])
         for category, items in recommendations.items():
@@ -574,112 +406,33 @@ def export_report():
                 for item in items:
                     writer.writerow(['', item])
                 writer.writerow([])
-        
-        # Prepare response
         output.seek(0)
         csv_content = output.getvalue()
-        
+        from flask import send_file
         return send_file(
             io.BytesIO(csv_content.encode('utf-8')),
             mimetype='text/csv',
             as_attachment=True,
-            download_name=f'diabetes_prediction_report_{datetime.now().strftime("%Y%m%d_%H%M%S")}.csv'
+            download_name=f'diabetes_prediction_report_{session.get("username", "anonymous")}_{datetime.now().strftime("%Y%m%d_%H%M%S")}.csv'
         )
-        
     except Exception as e:
         logger.error(f"Export Error: {e}")
         return jsonify({"error": str(e)}), 500
 
-@app.route('/health')
-def health_check():
-    """Health check endpoint"""
-    return jsonify({
-        "status": "healthy",
-        "model_loaded": model is not None,
-        "scaler_loaded": scaler is not None,
-        "encoders_loaded": label_encoders is not None,
-        "timestamp": datetime.now().isoformat()
-    })
-
-@app.route('/debug')
-def debug():
-    """Debug endpoint to check file availability"""
-    import os
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    models_dir = os.path.join(current_dir, 'models')
-    
-    debug_info = {
-        "current_directory": current_dir,
-        "models_directory": models_dir,
-        "models_directory_exists": os.path.exists(models_dir),
-        "files_in_current_dir": os.listdir(current_dir) if os.path.exists(current_dir) else [],
-        "files_in_models_dir": os.listdir(models_dir) if os.path.exists(models_dir) else [],
-        "model_file_exists": os.path.exists(os.path.join(models_dir, 'model.pkl')),
-        "scaler_file_exists": os.path.exists(os.path.join(models_dir, 'scaler.pkl')),
-        "encoders_file_exists": os.path.exists(os.path.join(models_dir, 'label_encoders.pkl')),
-        "features_file_exists": os.path.exists(os.path.join(models_dir, 'feature_names.pkl')),
-        "model_loaded": model is not None,
-        "scaler_loaded": scaler is not None,
-        "encoders_loaded": label_encoders is not None,
-        "features_loaded": feature_names is not None
-    }
-    
-    return jsonify(debug_info)
-
-@app.route('/test-load')
-def test_load():
-    """Test endpoint to try loading models with detailed error info"""
-    import os
-    import pickle
-    
-    results = {}
-    
-    try:
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        models_dir = os.path.join(current_dir, 'models')
-        
-        # Test each file individually
-        files_to_test = ['model.pkl', 'scaler.pkl', 'label_encoders.pkl', 'feature_names.pkl']
-        
-        for filename in files_to_test:
-            file_path = os.path.join(models_dir, filename)
-            results[filename] = {
-                'exists': os.path.exists(file_path),
-                'size': os.path.getsize(file_path) if os.path.exists(file_path) else 0,
-                'loaded': False,
-                'error': None
-            }
-            
-            if os.path.exists(file_path):
-                try:
-                    with open(file_path, 'rb') as f:
-                        data = pickle.load(f)
-                    results[filename]['loaded'] = True
-                    results[filename]['type'] = str(type(data))
-                except Exception as e:
-                    results[filename]['error'] = str(e)
-                    import traceback
-                    results[filename]['traceback'] = traceback.format_exc()
-        
-        return jsonify(results)
-        
-    except Exception as e:
-        return jsonify({'error': str(e), 'traceback': traceback.format_exc()})
-
 @app.errorhandler(404)
 def not_found(error):
-    return render_template('index.html', error="Page not found"), 404
+    flash("The page you requested could not be found.", "error")
+    return render_template('index.html', error="Page not found", username=session.get('username')), 404
 
 @app.errorhandler(500)
 def internal_error(error):
-    return render_template('index.html', error="Internal server error"), 500
+    flash("An internal server error occurred. Please try again later.", "error")
+    return render_template('index.html', error="Internal server error", username=session.get('username')), 500
 
-# WSGI application for Vercel
 app.debug = False
 
 if __name__ == "__main__":
     port = int(os.getenv('PORT', 5050))
     debug = os.getenv('FLASK_DEBUG', 'False').lower() == 'true'
-    
-    logger.info(f"Starting DiabetesCare AI application on port {port}")
+    logger.info(f"Starting DiabetesCare AI application on port {port} with debug={debug}")
     app.run(host='0.0.0.0', port=port, debug=debug)
