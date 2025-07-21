@@ -17,7 +17,7 @@
                 <span class="brand-icon">
                     <i class="fas fa-heartbeat"></i>
                 </span>
-                <span>DiabetesCare AI</span>
+                <span>DiabetesCare</span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -28,7 +28,7 @@
                         <a class="nav-link" href="#home">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#assessment">Assessment</a>
+                        <a class="nav-link" href="#risk-check">Risk Check</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#education">Education</a>
@@ -51,17 +51,17 @@
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-7">
-                    <h1 class="mb-3">Advanced Diabetes Risk Assessment & Treatment Recommendations</h1>
-                    <p class="lead mb-4">Experience the future of healthcare with our intelligent diabetes prediction system. Get personalized, evidence-based recommendations using advanced clinical algorithms and medical guidelines.</p>
+                    <h1 class="mb-3">Diabetes Risk Check & Personalized Recommendations</h1>
+                    <p class="lead mb-4">Discover your diabetes risk and get personalized, evidence-based recommendations. Our intelligent tool uses your health information to provide clear, actionable guidance for your well-being.</p>
                     <ul class="mb-4">
-                        <li>Advanced rule-based risk assessment (Age, BMI, HbA1c)</li>
+                        <li>Simple, quick diabetes risk check (Age, BMI, HbA1c)</li>
                         <li>Personalized, evidence-based treatment recommendations</li>
-                        <li>Real-time, interpretable results with detailed explanations</li>
+                        <li>Real-time, easy-to-understand results</li>
                         <li>Comprehensive educational content and lifestyle guidance</li>
                     </ul>
                     <div class="d-flex gap-3">
-                        <a href="#assessment" class="btn btn-primary btn-lg">
-                            <i class="fas fa-stethoscope me-2"></i>Start Assessment
+                        <a href="#risk-check" class="btn btn-primary btn-lg">
+                            <i class="fas fa-stethoscope me-2"></i>Start Risk Check
                         </a>
                         <a href="#education" class="btn btn-outline-light btn-lg">
                             <i class="fas fa-graduation-cap me-2"></i>Learn More
@@ -81,49 +81,32 @@
     </div>
 
 <!-- Assessment Form Section -->
-<section id="assessment" class="form-section container">
-  <div class="form-section-header">
-    <div class="form-section-icon">
-      <i class="fas fa-stethoscope"></i>
-    </div>
-    <h2>Diabetes Risk Assessment</h2>
+<section id="risk-check" class="form-section container mt-5">
+  <div class="form-section-header text-center mb-4">
+    <h2 class="fw-bold" style="color:#1976d2;">Diabetes Risk Check</h2>
+    <p class="text-muted">Enter your details below to check your diabetes risk and receive personalized recommendations.</p>
   </div>
-  
-  <form method="POST" action="/predict" class="row g-4">
-    <div class="col-md-4">
-      <label for="Age" class="form-label">
-        <i class="fas fa-birthday-cake me-2"></i>Age <span class="text-danger">*</span>
-      </label>
-      <input type="number" class="form-control" id="Age" name="Age" min="1" max="120" required value="{{ input_data.Age if input_data else '' }}" placeholder="Enter your age">
-      <div class="form-text">
-        <i class="fas fa-info-circle me-1"></i>Your age helps determine diabetes type and risk factors
-      </div>
+  <form method="POST" action="/predict" class="mx-auto" style="max-width: 600px; background: #fff; border-radius: 16px; box-shadow: 0 4px 24px rgba(25,118,210,0.08); padding: 2rem 1.5rem;">
+    <div class="mb-4">
+      <label for="Age" class="form-label fw-semibold">Age <span class="text-danger">*</span></label>
+      <input type="number" class="form-control" id="Age" name="Age" min="18" max="100" required value="{{ input_data.Age if input_data else '' }}" placeholder="e.g. 35">
+      <div class="form-text text-secondary">How old are you? (18-100 years)</div>
+      <div class="form-text text-muted">Your age helps us determine your risk group. Diabetes can affect all ages, but risk increases as you get older.</div>
     </div>
-    
-    <div class="col-md-4">
-      <label for="BMI" class="form-label">
-        <i class="fas fa-weight me-2"></i>BMI <span class="text-danger">*</span>
-      </label>
-      <input type="number" step="0.1" class="form-control" id="BMI" name="BMI" min="10" max="60" required value="{{ input_data.BMI if input_data else '' }}" placeholder="Enter your BMI">
-      <div class="form-text">
-        <i class="fas fa-calculator me-1"></i>Body Mass Index (kg/m²) - weight in kg ÷ (height in m)²
-      </div>
+    <div class="mb-4">
+      <label for="BMI" class="form-label fw-semibold">Body Mass Index (BMI) <span class="text-danger">*</span></label>
+      <input type="number" step="0.1" class="form-control" id="BMI" name="BMI" min="10" max="60" required value="{{ input_data.BMI if input_data else '' }}" placeholder="e.g. 24.5">
+      <div class="form-text text-secondary">What is your BMI? (10-60 kg/m²)</div>
+      <div class="form-text text-muted">BMI is a measure of body fat based on your height and weight. If you don't know your BMI, you can use an online calculator.</div>
     </div>
-    
-    <div class="col-md-4">
-      <label for="HbA1c" class="form-label">
-        <i class="fas fa-tint me-2"></i>HbA1c (%) <span class="text-danger">*</span>
-      </label>
-      <input type="number" step="0.1" class="form-control" id="HbA1c" name="HbA1c" min="3" max="15" required value="{{ input_data.HbA1c if input_data else '' }}" placeholder="Enter your HbA1c">
-      <div class="form-text">
-        <i class="fas fa-clock me-1"></i>Average blood sugar level over the last 2-3 months
-      </div>
+    <div class="mb-4">
+      <label for="HbA1c" class="form-label fw-semibold">HbA1c (Sugar Level) <span class="text-danger">*</span></label>
+      <input type="number" step="0.1" class="form-control" id="HbA1c" name="HbA1c" min="4" max="15" required value="{{ input_data.HbA1c if input_data else '' }}" placeholder="e.g. 6.2">
+      <div class="form-text text-secondary">What is your HbA1c? (4-15%)</div>
+      <div class="form-text text-muted">HbA1c is a blood test that shows your average blood sugar over the last 2-3 months. If you don't know your value, ask your doctor or check your last lab result.</div>
     </div>
-    
-    <div class="col-12">
-      <button type="submit" class="btn btn-primary btn-lg w-100">
-        <i class="fas fa-search me-2"></i>Analyze Risk & Get Recommendations
-      </button>
+    <div class="mb-4">
+      <button type="submit" class="btn btn-primary btn-lg w-100">Check My Diabetes Risk</button>
     </div>
   </form>
 </section>
@@ -131,45 +114,88 @@
 <!-- Results Section -->
 {% if prediction_text %}
 <section class="container">
-  <div class="result-summary">
-    <h3>Your Diabetes Risk Assessment</h3>
-    
-    <div class="row">
-      <div class="col-md-6">
-        <div class="result-item">
-          <span class="label">Assessment Result:</span>
-          <span class="value text-{{ result_type }}">{{ prediction_text }}</span>
+  <div class="result-summary mb-4">
+    <div class="card shadow-sm border-0 mb-4">
+      <div class="card-body d-flex flex-column flex-md-row align-items-center justify-content-between">
+        <div class="mb-3 mb-md-0">
+          <h3 class="mb-2">Your Diabetes Risk Result</h3>
+          <p class="mb-0 text-muted">Based on your information, here is your personalized diabetes risk overview and next steps.</p>
         </div>
-        <div class="result-item">
-          <span class="label">Diabetes Type:</span>
-          <span class="value">{{ diabetes_type }}</span>
-        </div>
-        <div class="result-item">
-          <span class="label">Risk Level:</span>
-          <span class="value">{{ risk_level }}</span>
-        </div>
-      </div>
-      
-      {% if explanation %}
-      <div class="col-md-6">
-        <div class="result-item">
-          <span class="label">Analysis:</span>
-          <span class="value">
-            {% for rule in explanation %}
-              <div class="mb-1">{{ rule }}</div>
-            {% endfor %}
+        <div>
+          <span class="badge px-3 py-2 fs-6 bg-{{ 'danger' if risk_level == 'High' else 'warning' if risk_level == 'Moderate' else 'success' }} text-white">
+            <i class="fas fa-exclamation-circle me-1"></i> {{ risk_level }} Risk
           </span>
         </div>
       </div>
-      {% endif %}
+    </div>
+    <div class="row g-4 align-items-stretch">
+      <div class="col-md-4">
+        <div class="card h-100 border-0 bg-light">
+          <div class="card-body">
+            <h6 class="fw-bold mb-3"><i class="fas fa-user-check me-2 text-primary"></i>Your Details</h6>
+            <ul class="list-unstyled mb-0">
+              <li><strong>Age:</strong> {{ input_data.Age if input_data else '?' }}</li>
+              <li><strong>BMI:</strong> {{ input_data.BMI if input_data else '?' }}</li>
+              <li><strong>HbA1c:</strong> {{ input_data.HbA1c if input_data else '?' }}</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-8">
+        <div class="card h-100 border-0">
+          <div class="card-body">
+            <div class="row mb-3">
+              <div class="col-12 col-lg-4 mb-2 mb-lg-0">
+                <span class="fw-semibold">Result:
+                  <i class="fas fa-info-circle text-secondary" data-bs-toggle="tooltip" title="This is your diabetes risk prediction based on your input."></i>
+                </span>
+                <div class="fs-5 text-{{ result_type }}">{{ prediction_text }}</div>
+              </div>
+              <div class="col-12 col-lg-4 mb-2 mb-lg-0">
+                <span class="fw-semibold">Diabetes Type:
+                  <i class="fas fa-info-circle text-secondary" data-bs-toggle="tooltip" title="Type of diabetes risk detected, if any."></i>
+                </span>
+                <div>{{ diabetes_type }}</div>
+              </div>
+              <div class="col-12 col-lg-4">
+                <span class="fw-semibold">Risk Level:
+                  <i class="fas fa-info-circle text-secondary" data-bs-toggle="tooltip" title="Overall risk level based on your data."></i>
+                </span>
+                <div>
+                  <span class="badge bg-{{ 'danger' if risk_level == 'High' else 'warning' if risk_level == 'Moderate' else 'success' }}">{{ risk_level }}</span>
+                </div>
+              </div>
+            </div>
+            {% if explanation %}
+            <div class="mb-3">
+              <span class="fw-semibold">How was this calculated?
+                <i class="fas fa-info-circle text-secondary" data-bs-toggle="tooltip" title="Explanation of the rules or factors that led to your result."></i>
+              </span>
+              <ul class="mb-0 ps-3">
+                {% for rule in explanation %}
+                  <li>{{ rule }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+            {% endif %}
+            <div class="d-flex flex-wrap gap-2 mt-3">
+              <a href="#" class="btn btn-outline-primary btn-sm" onclick="exportReport(); return false;">
+                <i class="fas fa-download me-1"></i> Download Report
+              </a>
+              <a href="#education" class="btn btn-outline-secondary btn-sm">
+                <i class="fas fa-graduation-cap me-1"></i> Learn More
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-  
   <div class="row g-4">
     <div class="col-lg-6">
-      <div class="recommendation-card important">
-        <h5>Personalized Recommendations</h5>
-        <ul>
+      <div class="recommendation-card important h-100">
+        <h5><i class="fas fa-lightbulb text-success me-2"></i>Personalized Recommendations</h5>
+        <ul class="mb-0">
           {% for cat, items in recommendations.items() %}
             {% for item in items %}
               <li>{{ item }}</li>
@@ -178,11 +204,10 @@
         </ul>
       </div>
     </div>
-    
     <div class="col-lg-6">
-      <div class="recommendation-card">
-        <h5>Educational Content</h5>
-        <ul>
+      <div class="recommendation-card h-100">
+        <h5><i class="fas fa-book-open text-info me-2"></i>Educational Content</h5>
+        <ul class="mb-0">
           {% for cat, items in educational_content.items() %}
             {% for item in items %}
               <li>{{ item }}</li>
@@ -192,6 +217,8 @@
       </div>
     </div>
   </div>
+  <script>var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+  tooltipTriggerList.map(function (tooltipTriggerEl) {return new bootstrap.Tooltip(tooltipTriggerEl);});</script>
 </section>
 {% endif %}
 
@@ -205,7 +232,7 @@
                             <i class="fas {% if 'detected' in prediction_text %}fa-exclamation-triangle text-warning{% else %}fa-check-circle text-success{% endif %}"></i>
                         </span>
                         <div class="flex-grow-1">
-                            <h4 class="modal-title mb-0">Detailed Assessment Results</h4>
+                            <h4 class="modal-title mb-0">Detailed Risk Check Results</h4>
                             <div class="small text-muted">Comprehensive analysis and recommendations</div>
                                                 </div>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -293,7 +320,7 @@
             <div class="row">
                 <div class="col-12 text-center mb-5">
                     <h2 class="section-title">About the System</h2>
-                    <p class="section-subtitle">Advanced AI-powered diabetes prediction and management system</p>
+                    <p class="section-subtitle">A user-friendly tool for checking diabetes risk and receiving personalized, evidence-based recommendations</p>
                 </div>
             </div>
             <div class="row g-4">
@@ -303,8 +330,8 @@
                             <div class="feature-icon mb-3">
                                 <i class="fas fa-robot fa-3x text-primary"></i>
                             </div>
-                            <h5 class="card-title">AI-Powered Prediction</h5>
-                            <p class="card-text text-muted">Advanced machine learning algorithms provide accurate diabetes risk assessment based on comprehensive health parameters.</p>
+                            <h5 class="card-title">Rule-Based Risk Check</h5>
+                            <p class="card-text text-muted">Quickly assess your diabetes risk using simple health information—no lab tests or complex forms required.</p>
                         </div>
                     </div>
                 </div>
@@ -314,8 +341,8 @@
                             <div class="feature-icon mb-3">
                                 <i class="fas fa-user-cog fa-3x text-success"></i>
                             </div>
-                            <h5 class="card-title">Personalized Recommendations</h5>
-                            <p class="card-text text-muted">Tailored treatment and lifestyle recommendations based on individual risk profiles and health parameters.</p>
+                            <h5 class="card-title">Personalized Guidance</h5>
+                            <p class="card-text text-muted">Receive clear, actionable recommendations tailored to your risk level and health profile, based on trusted medical guidelines.</p>
                         </div>
                     </div>
                 </div>
@@ -325,8 +352,8 @@
                             <div class="feature-icon mb-3">
                                 <i class="fas fa-graduation-cap fa-3x text-info"></i>
                             </div>
-                            <h5 class="card-title">Educational Content</h5>
-                            <p class="card-text text-muted">Comprehensive educational materials about diabetes prevention, management, and healthy living practices.</p>
+                            <h5 class="card-title">Educational Resources</h5>
+                            <p class="card-text text-muted">Access easy-to-understand information about diabetes prevention, healthy living, and ongoing management.</p>
                         </div>
                     </div>
                 </div>
@@ -336,8 +363,8 @@
                             <div class="feature-icon mb-3">
                                 <i class="fas fa-file-export fa-3x text-warning"></i>
                             </div>
-                            <h5 class="card-title">Report Export</h5>
-                            <p class="card-text text-muted">Generate detailed reports that can be shared with healthcare providers for better care coordination.</p>
+                            <h5 class="card-title">Shareable Reports</h5>
+                            <p class="card-text text-muted">Download or share your results and recommendations with healthcare providers for better care and follow-up.</p>
                         </div>
                     </div>
                 </div>
@@ -349,33 +376,45 @@
     <footer class="bg-dark text-white py-4">
         <div class="container">
             <div class="row">
-                <div class="col-md-6">
-                    <h5 class="fw-bold">DiabetesCare AI</h5>
-                    <p class="text-muted">Advanced Diabetes Prediction and Treatment Recommendation System</p>
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <h5 class="fw-bold">DiabetesCare</h5>
+                    <p class="text-white small mb-2">A user-friendly tool for checking diabetes risk and getting personalized, evidence-based recommendations. Empowering you to take charge of your health.</p>
+                    <p class="text-white small mb-0"><i class="fas fa-graduation-cap me-2"></i>Nigeria Defence Academy, Kaduna</p>
+                    <p class="text-white small"><i class="fas fa-calendar me-2"></i>July 2025</p>
                 </div>
-                <div class="col-md-6 text-md-end">
-                    <p class="text-muted mb-0">
-                        <i class="fas fa-graduation-cap me-2"></i>
-                        Nigeria Defence Academy, Kaduna
-                    </p>
-                    <p class="text-muted mb-0">
-                        <i class="fas fa-calendar me-2"></i>
-                        July 2025
-                    </p>
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <h6 class="fw-semibold text-white">Quick Links</h6>
+                    <ul class="list-unstyled mb-0">
+                        <li><a href="#risk-check" class="text-decoration-none text-white">Diabetes Risk Check</a></li>
+                        <li><a href="#education" class="text-decoration-none text-white">Educational Resources</a></li>
+                        <li><a href="#about" class="text-decoration-none text-white">About the System</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h6 class="fw-semibold text-white">Contact & Info</h6>
+                    <ul class="list-unstyled mb-2">
+                        <li><i class="fas fa-envelope me-2"></i><a href="mailto:info@diabetescare.com" class="text-decoration-none text-white">info@diabetescare.com</a></li>
+                        <li><i class="fas fa-globe me-2"></i><a href="#" class="text-decoration-none text-white">www.diabetescare.com</a></li>
+                    </ul>
+                    <p class="text-white small mb-0"><i class="fas fa-shield-alt me-2"></i>This tool is for educational and informational purposes only. Always consult healthcare professionals for medical advice.</p>
                 </div>
             </div>
-            <hr class="my-3">
+            <hr class="my-3 text-white">
             <div class="row">
                 <div class="col-12 text-center">
-                    <p class="text-muted mb-0">
-                        <small>
-                            <i class="fas fa-shield-alt me-2"></i>
-                            This system is for educational and research purposes. Always consult healthcare professionals for medical decisions.
-                        </small>
-                    </p>
+                    <p class="text-white mb-0 small">&copy; {{ now().year }} DiabetesCare. All rights reserved.</p>
                 </div>
             </div>
         </div>
+        <style>
+            footer a.text-white:hover, footer a.text-white:focus {
+                color: #f8f9fa !important;
+                text-decoration: underline;
+            }
+            footer hr.text-white {
+                border-top: 1px solid #fff;
+            }
+        </style>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -482,7 +521,7 @@
         }
 
         function showHelp() {
-            showAlert('This is a comprehensive diabetes risk assessment tool. Fill out all required fields to get personalized recommendations based on your health parameters.', 'info');
+            showAlert('This is a simple diabetes risk check tool. Fill out all required fields to get personalized recommendations based on your health parameters.', 'info');
         }
 
         // Utility function to show alerts
